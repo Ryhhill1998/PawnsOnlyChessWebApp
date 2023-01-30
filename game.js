@@ -4,6 +4,7 @@ const board = document.getElementById("board");
 // game variables
 let pieceSelected, spaceSelected = null;
 let turn = "white";
+let gameOver = false;
 
 const highlightSpace = (space) => {
     space.style.borderColor = "red";
@@ -20,6 +21,8 @@ const removeSpaceHighlight = (space) => {
 }
 
 const spaceClicked = ({target}) => {
+    if (gameOver) return;
+
     const space = target.closest(".space");
     const image = getImage(space);
 
@@ -39,17 +42,22 @@ const spaceClicked = ({target}) => {
         space.appendChild(newImage);
 
         let pieceImageSrc = pieceSelected.src;
-
         if (!pieceHasMoved(pieceSelected)) {
             pieceImageSrc = pieceSelected.src.split(".")[0] + "-moved.svg";
         }
-
         newImage.src = pieceImageSrc;
+
+        // check if game is over
+        const pieceColour = getPieceColour(pieceSelected);
+        gameOver = gameIsOver(space, pieceColour);
 
         removeSpaceHighlight(spaceSelected);
         spaceSelected = pieceSelected = null;
-
         changeTurn();
+
+        if (gameOver) {
+            console.log(pieceColour + " wins!");
+        }
 
     } else if (correctColourClicked(image?.src)) {
         removeSpaceHighlight(spaceSelected);
@@ -57,6 +65,27 @@ const spaceClicked = ({target}) => {
         spaceSelected = space;
         highlightSpace(space);
     }
+}
+
+const gameIsOver = (moveSpace, colourMoved) => {
+    const y = Number.parseInt(moveSpace.closest(".row").id.at(-1));
+    let isOver;
+
+    if (colourMoved === "white") {
+        isOver = whiteHasWon(y);
+    } else {
+        isOver = blackHasWon(y);
+    }
+
+    return isOver;
+}
+
+const whiteHasWon = (y) => {
+    return y === 0;
+}
+
+const blackHasWon = (y) => {
+    return y === 7;
 }
 
 const moveIsValid = (spaceSelected, spaceToMoveTo) => {
@@ -124,7 +153,6 @@ const getPossibleMoves = (colour, hasMoved, startingX, startingY) => {
     let y = startingY + movement;
 
     if (takeIsPossible(colourToTake, x, y)) {
-        console.log("Take possible!");
         coordinates.push(x);
         coordinates.push(y);
         possibleMoves.push(coordinates);
@@ -137,7 +165,6 @@ const getPossibleMoves = (colour, hasMoved, startingX, startingY) => {
     y = startingY + movement;
 
     if (takeIsPossible(colourToTake, x, y)) {
-        console.log("Take possible!");
         coordinates.push(x);
         coordinates.push(y);
         possibleMoves.push(coordinates);
