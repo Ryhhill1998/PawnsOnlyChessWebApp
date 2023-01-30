@@ -26,7 +26,7 @@ const spaceClicked = ({target}) => {
     const space = target.closest(".space");
     const image = getImage(space);
 
-    if (pieceSelected) {
+    if ((!image || getPieceColour(pieceSelected) !== getPieceColour(image)) && pieceSelected) {
         // check if move is valid
         if (!moveIsValid(spaceSelected, space)) return;
 
@@ -145,29 +145,34 @@ const getPossibleMoves = (colour, hasMoved, startingX, startingY) => {
         }
     }
 
-    coordinates = [];
+    if (colour === "white" && startingX !== 7 || colour === "black" && startingX !== 0) {
+        coordinates = [];
 
-    // check right take available
-    const colourToTake = colour === "white" ? "black" : "white";
-    let x = startingX - movement;
-    let y = startingY + movement;
+        // check right take available
+        const colourToTake = colour === "white" ? "black" : "white";
+        const x = startingX - movement;
+        const y = startingY + movement;
 
-    if (takeIsPossible(colourToTake, x, y)) {
-        coordinates.push(x);
-        coordinates.push(y);
-        possibleMoves.push(coordinates);
+        if (takeIsPossible(colourToTake, x, y)) {
+            coordinates.push(x);
+            coordinates.push(y);
+            possibleMoves.push(coordinates);
+        }
     }
 
-    coordinates = [];
+    if (colour === "white" && startingX !== 0 || colour === "black" && startingX !== 7) {
+        coordinates = [];
 
-    // check left take available
-    x = startingX + movement;
-    y = startingY + movement;
+        // check left take available
+        const colourToTake = colour === "white" ? "black" : "white";
+        const x = startingX + movement;
+        const y = startingY + movement;
 
-    if (takeIsPossible(colourToTake, x, y)) {
-        coordinates.push(x);
-        coordinates.push(y);
-        possibleMoves.push(coordinates);
+        if (takeIsPossible(colourToTake, x, y)) {
+            coordinates.push(x);
+            coordinates.push(y);
+            possibleMoves.push(coordinates);
+        }
     }
 
     return possibleMoves;
