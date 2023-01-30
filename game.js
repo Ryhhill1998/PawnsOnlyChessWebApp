@@ -31,7 +31,14 @@ const spaceClicked = ({target}) => {
         spaceSelected.removeChild(pieceSelected);
         const newImage = document.createElement("img");
         space.appendChild(newImage);
-        newImage.src = pieceSelected.src;
+
+        let pieceImageSrc = pieceSelected.src;
+
+        if (!pieceHasMoved(pieceSelected)) {
+            pieceImageSrc = pieceSelected.src.split(".")[0] + "-moved.svg";
+        }
+
+        newImage.src = pieceImageSrc;
 
         removeSpaceHighlight(spaceSelected);
         spaceSelected = pieceSelected = null;
@@ -53,7 +60,8 @@ const moveIsValid = (spaceSelected, spaceToMoveTo) => {
 
     // get possible moves for piece
     const pieceColour = getPieceColour(pieceSelected);
-    const possibleMoves = getPossibleMoves(pieceColour, x, y);
+    const hasMoved = pieceHasMoved(pieceSelected);
+    const possibleMoves = getPossibleMoves(pieceColour, hasMoved, x, y);
 
     // get new x and y positions of move
     const newX = Number.parseInt(spaceToMoveTo.classList.value.at(-1));
@@ -80,7 +88,9 @@ const getPieceColour = (image) => {
     return image.src.includes("white") ? "white" : "black";
 }
 
-const getPossibleMoves = (colour, startingX, startingY) => {
+const pieceHasMoved = (image) => image.src.includes("moved");
+
+const getPossibleMoves = (colour, hasMoved, startingX, startingY) => {
     const movement = colour === "white" ? -1 : 1;
     const possibleMoves = [];
 
@@ -90,6 +100,14 @@ const getPossibleMoves = (colour, startingX, startingY) => {
         coordinates.push(startingX);
         coordinates.push(startingY + movement);
         possibleMoves.push(coordinates);
+
+        coordinates = [];
+
+        if (!hasMoved && spaceIsFree(startingX, startingY + 2 * movement)) {
+            coordinates.push(startingX);
+            coordinates.push(startingY + 2 * movement);
+            possibleMoves.push(coordinates);
+        }
     }
 
     return possibleMoves;
