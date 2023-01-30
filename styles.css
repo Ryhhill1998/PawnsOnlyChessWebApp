@@ -1,0 +1,38 @@
+html {
+    background-color: lightgrey;
+}
+
+main {
+    padding: 5em 0;
+}
+
+.board {
+    width: fit-content;
+    margin: 0 auto;
+    border: solid 5px black;
+}
+
+.row {
+    display: flex;
+}
+
+.space {
+    height: 75px;
+    width: 75px;
+    border: solid 2px;
+}
+
+.space-blue {
+    background-color: #3A8891;
+    border-color: #3A8891;
+}
+
+.space-white {
+    background-color: #E2DCC8;
+    border-color: #E2DCC8;
+}
+
+img {
+    height: 100%;
+    width: 100%;
+}
