@@ -23,11 +23,17 @@ const spaceClicked = ({target}) => {
     const space = target.closest(".space");
     const image = getImage(space);
 
-    if (!image && pieceSelected) {
+    if (pieceSelected) {
         // check if move is valid
         if (!moveIsValid(spaceSelected, space)) return;
 
         // UI
+        // check if space contains image (take move)
+        const spaceImage = space.querySelector("img");
+        if (spaceImage) {
+            space.removeChild(spaceImage);
+        }
+
         spaceSelected.removeChild(pieceSelected);
         const newImage = document.createElement("img");
         space.appendChild(newImage);
@@ -110,6 +116,33 @@ const getPossibleMoves = (colour, hasMoved, startingX, startingY) => {
         }
     }
 
+    coordinates = [];
+
+    // check right take available
+    const colourToTake = colour === "white" ? "black" : "white";
+    let x = startingX - movement;
+    let y = startingY + movement;
+
+    if (takeIsPossible(colourToTake, x, y)) {
+        console.log("Take possible!");
+        coordinates.push(x);
+        coordinates.push(y);
+        possibleMoves.push(coordinates);
+    }
+
+    coordinates = [];
+
+    // check left take available
+    x = startingX + movement;
+    y = startingY + movement;
+
+    if (takeIsPossible(colourToTake, x, y)) {
+        console.log("Take possible!");
+        coordinates.push(x);
+        coordinates.push(y);
+        possibleMoves.push(coordinates);
+    }
+
     return possibleMoves;
 }
 
@@ -117,6 +150,20 @@ const spaceIsFree = (x, y) => {
     const row = document.getElementById("row-" + y);
     const space = row.querySelector(".space-" + x);
     return getImage(space) === null;
+}
+
+const takeIsPossible = (colourToTake, x, y) => {
+    let isPossible = false;
+
+    const row = document.getElementById("row-" + y);
+    const space = row.querySelector(".space-" + x);
+    const pieceImage = getImage(space);
+
+    if (pieceImage) {
+        isPossible = getPieceColour(pieceImage) === colourToTake;
+    }
+
+    return isPossible;
 }
 
 const changeTurn = () => turn = turn === "white" ? "black" : "white";
