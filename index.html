@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <title>Chess</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="pawn.js" defer></script>
+    <script src="board.js" defer></script>
+    <script src="UI.js" defer></script>
     <script src="game.js" defer></script>
 </head>
 <body>
 
 <main>
     <div id="board" class="board">
-        <div class="row">
+        <div id="row-0" class="row">
             <div class="space space-white"><img src="pieces/black/pawn.svg" alt=""></div>
             <div class="space space-blue"><img src="pieces/black/pawn.svg" alt=""></div>
             <div class="space space-white"><img src="pieces/black/pawn.svg" alt=""></div>
@@ -21,7 +24,7 @@
             <div class="space space-blue"><img src="pieces/black/pawn.svg" alt=""></div>
         </div>
 
-        <div class="row">
+        <div id="row-1" class="row">
             <div class="space space-blue"><img src="pieces/black/pawn.svg" alt=""></div>
             <div class="space space-white"><img src="pieces/black/pawn.svg" alt=""></div>
             <div class="space space-blue"><img src="pieces/black/pawn.svg" alt=""></div>
@@ -32,7 +35,7 @@
             <div class="space space-white"><img src="pieces/black/pawn.svg" alt=""></div>
         </div>
 
-        <div class="row">
+        <div id="row-2" class="row">
             <div class="space space-white"></div>
             <div class="space space-blue"></div>
             <div class="space space-white"></div>
@@ -43,7 +46,7 @@
             <div class="space space-blue"></div>
         </div>
 
-        <div class="row">
+        <div id="row-3" class="row">
             <div class="space space-blue"></div>
             <div class="space space-white"></div>
             <div class="space space-blue"></div>
@@ -54,7 +57,7 @@
             <div class="space space-white"></div>
         </div>
 
-        <div class="row">
+        <div id="row-4" class="row">
             <div class="space space-white"></div>
             <div class="space space-blue"></div>
             <div class="space space-white"></div>
@@ -65,7 +68,7 @@
             <div class="space space-blue"></div>
         </div>
 
-        <div class="row">
+        <div id="row-5" class="row">
             <div class="space space-blue"></div>
             <div class="space space-white"></div>
             <div class="space space-blue"></div>
@@ -76,7 +79,7 @@
             <div class="space space-white"></div>
         </div>
 
-        <div class="row">
+        <div id="row-6" class="row">
             <div class="space space-white"><img src="pieces/white/pawn.svg" alt=""></div>
             <div class="space space-blue"><img src="pieces/white/pawn.svg" alt=""></div>
             <div class="space space-white"><img src="pieces/white/pawn.svg" alt=""></div>
@@ -87,7 +90,7 @@
             <div class="space space-blue"><img src="pieces/white/pawn.svg" alt=""></div>
         </div>
 
-        <div class="row">
+        <div id="row-7" class="row">
             <div class="space space-blue"><img src="pieces/white/pawn.svg" alt=""></div>
             <div class="space space-white"><img src="pieces/white/pawn.svg" alt=""></div>
             <div class="space space-blue"><img src="pieces/white/pawn.svg" alt=""></div>
