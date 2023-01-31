@@ -296,6 +296,8 @@ const spaceClicked = ({target}) => {
 
         changeTurn();
 
+    } else if (space === spaceSelected) {
+        deselectPiece();
     } else {
         selectPiece(space, image);
     }
