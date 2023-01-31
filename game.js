@@ -10,6 +10,7 @@ let possibleMoves = [];
 
 const pieceSelectedHTML = `<div class="space-overlay space-overlay-selected"></div>`;
 const validMoveIndicatorHTML = `<div class="space-overlay space-overlay-possible-move"></div>`;
+const validTakeIndicatorHTML = `<div class="space-overlay space-overlay-possible-take"></div>`;
 
 
 // ---------- HELPER FUNCTIONS ---------- //
@@ -22,6 +23,11 @@ const addPieceSelectedOverlay = (space) => {
 // add valid move overlay to space
 const addValidMoveOverlay = (space) => {
     space.insertAdjacentHTML("beforeend", validMoveIndicatorHTML);
+}
+
+// add valid take overlay to space
+const addValidTakeOverlay = (space) => {
+    space.insertAdjacentHTML("beforeend", validTakeIndicatorHTML);
 }
 
 // remove overlay from square
@@ -50,7 +56,11 @@ const showPossibleMoves = () => {
         const coordinates = move.coordinates;
         const row = document.getElementById("row-" + coordinates[1]);
         const space = row.querySelector(".space-" + coordinates[0]);
-        addValidMoveOverlay(space);
+        if (move.type === "take") {
+            addValidTakeOverlay(space);
+        } else {
+            addValidMoveOverlay(space);
+        }
     });
 }
 
