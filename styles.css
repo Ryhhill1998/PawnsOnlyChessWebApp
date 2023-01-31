@@ -1,14 +1,22 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
 html {
     background-color: lightgrey;
 }
 
-main {
-    padding: 3em 0;
+.game-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .board {
     width: fit-content;
-    margin: 0 auto;
     border: solid 5px black;
 }
 
@@ -19,7 +27,7 @@ main {
 .space {
     height: 75px;
     width: 75px;
-    border: solid 2px;
+    border: solid 3px;
 }
 
 .space-blue {
@@ -33,6 +41,6 @@ main {
 }
 
 img {
-    height: 100%;
     width: 100%;
+    height: 100%;
 }

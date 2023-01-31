@@ -26,17 +26,20 @@ const setPossibleMoves = (space, piece) => {
 // show possible moves for piece selected
 const showPossibleMoves = () => {
     possibleMoves.forEach(move => {
-        const row = document.getElementById("row-" + move[1]);
-        const space = row.querySelector(".space-" + move[0]);
-        highlightSpace(space, "blue");
+        const coordinates = move.coordinates;
+        const row = document.getElementById("row-" + coordinates[1]);
+        const space = row.querySelector(".space-" + coordinates[0]);
+        const highlightColour = move.type === "take" ? "red" : "blue";
+        highlightSpace(space, highlightColour);
     });
 }
 
 // hide possible moves for previous piece selected
 const hidePossibleMoves = () => {
     possibleMoves.forEach(move => {
-        const row = document.getElementById("row-" + move[1]);
-        const space = row.querySelector(".space-" + move[0]);
+        const coordinates = move.coordinates;
+        const row = document.getElementById("row-" + coordinates[1]);
+        const space = row.querySelector(".space-" + coordinates[0]);
         removeSpaceHighlight(space);
     });
 }
@@ -67,7 +70,7 @@ const deselectPiece = () => {
 }
 
 // add highlight to space
-const highlightSpace = (space, colour = "red") => {
+const highlightSpace = (space, colour = "blue") => {
     space.style.borderColor = colour;
 }
 
@@ -92,7 +95,7 @@ const moveIsValid = (spaceSelected, spaceToMoveTo) => {
     let isValid = false;
 
     for (let i = 0; i < possibleMoves.length; i++) {
-        const [xCoordinate, yCoordinate] = possibleMoves[i];
+        const [xCoordinate, yCoordinate] = possibleMoves[i].coordinates;
 
         if (xCoordinate === newX && yCoordinate === newY) {
             isValid = true;
@@ -109,10 +112,10 @@ const getPossibleMoves = (colour, hasMoved, startingX, startingY) => {
     const possibleMoves = [];
 
     if (spaceIsFree(startingX, startingY + movement)) {
-        updatePossibleMoves(possibleMoves, startingX, startingY + movement);
+        updatePossibleMoves(possibleMoves, startingX, startingY + movement, "standard");
 
         if (!hasMoved && spaceIsFree(startingX, startingY + 2 * movement)) {
-            updatePossibleMoves(possibleMoves, startingX, startingY + 2 * movement);
+            updatePossibleMoves(possibleMoves, startingX, startingY + 2 * movement, "standard");
         }
     }
 
@@ -122,9 +125,13 @@ const getPossibleMoves = (colour, hasMoved, startingX, startingY) => {
     return possibleMoves;
 }
 
-const updatePossibleMoves = (possibleMoves, x, y) => {
-    const coordinates = [x, y];
-    possibleMoves.push(coordinates);
+const updatePossibleMoves = (possibleMoves, x, y, type) => {
+    const move = {
+        coordinates: [x, y],
+        type
+    };
+
+    possibleMoves.push(move);
 }
 
 const addRightTakeMoves = (possibleMoves, colour, movement, x, y) => {
@@ -146,7 +153,7 @@ const addTakeMoves = (possibleMoves, takeDirection, colour, movement, x, y) => {
     const newY = y + movement;
 
     if (takeIsPossible(colourToTake, newX, newY)) {
-        updatePossibleMoves(possibleMoves, newX, newY);
+        updatePossibleMoves(possibleMoves, newX, newY, "take");
     }
 }
 
