@@ -8,6 +8,11 @@ let turn = "white";
 let gameOver = false;
 let possibleMoves = [];
 
+let previousMove = {
+    startSpace: null,
+    endSpace: null
+};
+
 const pieceSelectedHTML = `<div class="space-overlay space-overlay-selected"></div>`;
 const validMoveIndicatorHTML = `<div class="space-overlay space-overlay-possible-move"></div>`;
 const validTakeIndicatorHTML = `<div class="space-overlay space-overlay-possible-take"></div>`;
@@ -17,25 +22,50 @@ const validTakeIndicatorHTML = `<div class="space-overlay space-overlay-possible
 
 // add piece selected overlay to space
 const addPieceSelectedOverlay = (space) => {
+    if (!space) return;
     space.insertAdjacentHTML("beforeend", pieceSelectedHTML);
 }
 
 // add valid move overlay to space
 const addValidMoveOverlay = (space) => {
+    if (!space) return;
     space.insertAdjacentHTML("beforeend", validMoveIndicatorHTML);
 }
 
 // add valid take overlay to space
 const addValidTakeOverlay = (space) => {
+    if (!space) return;
     space.insertAdjacentHTML("beforeend", validTakeIndicatorHTML);
 }
 
-// remove overlay from square
-const removeOverlay = (space) => {
+// remove selected overlay from square
+const removeSelectedOverlay = (space) => {
     if (!space) return;
-    const overlay = space.querySelector("div");
+    const overlay = space.querySelector(".space-overlay-selected");
     if (!overlay) return;
     space.removeChild(overlay);
+}
+
+// remove valid move overlay from square
+const removeValidMoveOverlay = (space) => {
+    if (!space) return;
+    const overlay = space.querySelector(".space-overlay-possible-move");
+    if (!overlay) return;
+    space.removeChild(overlay);
+}
+
+// remove valid take overlay from square
+const removeValidTakeOverlay = (space) => {
+    if (!space) return;
+    const overlay = space.querySelector(".space-overlay-possible-take");
+    if (!overlay) return;
+    space.removeChild(overlay);
+}
+
+// remove possible positions overlay
+const removePossiblePositionsOverlay = (space) => {
+    removeValidMoveOverlay(space);
+    removeValidTakeOverlay(space);
 }
 
 // set possible moves for piece
@@ -70,9 +100,20 @@ const hidePossibleMoves = () => {
         const coordinates = move.coordinates;
         const row = document.getElementById("row-" + coordinates[1]);
         const space = row.querySelector(".space-" + coordinates[0]);
-        console.log(space);
-        removeOverlay(space);
+        removePossiblePositionsOverlay(space);
     });
+}
+
+// show previous move on board
+const showPreviousMove = () => {
+    addPieceSelectedOverlay(previousMove.startSpace);
+    addPieceSelectedOverlay(previousMove.endSpace);
+}
+
+// remove previous move from board
+const hidePreviousMove = () => {
+    removeSelectedOverlay(previousMove.startSpace);
+    removeSelectedOverlay(previousMove.endSpace);
 }
 
 // select piece if of correct colour
@@ -95,25 +136,9 @@ const selectPiece = (space, image) => {
 
 // deselect piece
 const deselectPiece = () => {
-    removeOverlay(spaceSelected);
+    removeSelectedOverlay(spaceSelected);
     hidePossibleMoves(pieceSelected);
     spaceSelected = pieceSelected = null;
-}
-
-// add highlight to space
-const highlightSpace = (space, colour = "blue") => {
-    space.style.borderColor = colour;
-}
-
-// remove highlight from space
-const removeSpaceHighlight = (space) => {
-    if (!space) return;
-
-    if (space.classList.contains("space-blue")) {
-        space.style.borderColor = "#3A8891";
-    } else {
-        space.style.borderColor = "#E2DCC8";
-    }
 }
 
 // check if the attempted move is valid
@@ -234,6 +259,11 @@ const movePiece = (previousSpace, newSpace, piece) => {
     }
 
     newImage.src = pieceImageSrc;
+
+    hidePreviousMove();
+    previousMove.startSpace = previousSpace;
+    previousMove.endSpace = newSpace;
+    showPreviousMove();
 }
 
 // get the colour associated with the image element of a piece
@@ -311,6 +341,8 @@ const spaceClicked = ({target}) => {
     } else {
         selectPiece(space, image);
     }
+
+    console.log(spaceSelected)
 }
 
 // ---------- EVENT LISTENERS ---------- //

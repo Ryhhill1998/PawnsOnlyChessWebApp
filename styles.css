@@ -36,7 +36,7 @@ html {
 }
 
 .space-overlay-selected {
-    background-color: rgba(255, 255, 0, 0.6);
+    background-color: rgba(255, 255, 0, 0.5);
     height: 100%;
     width: 100%;
 }
@@ -63,7 +63,7 @@ html {
 }
 
 .space-white {
-    background-color: #E2DCC8;
+    background-color: #E3FDFD;
 }
 
 img {
