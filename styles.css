@@ -27,20 +27,42 @@ html {
 .space {
     height: 75px;
     width: 75px;
-    border: solid 3px;
+    position: relative;
+}
+
+.space-overlay {
+    position: absolute;
+    z-index: 5;
+}
+
+.space-overlay-selected {
+    background-color: rgba(255, 255, 0, 0.6);
+    top: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.space-overlay-possible-move {
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 30%;
+    width: 30%;
 }
 
 .space-blue {
     background-color: #3A8891;
-    border-color: #3A8891;
 }
 
 .space-white {
     background-color: #E2DCC8;
-    border-color: #E2DCC8;
 }
 
 img {
+    position: absolute;
+    z-index: 10;
     width: 100%;
     height: 100%;
 }

@@ -8,8 +8,29 @@ let turn = "white";
 let gameOver = false;
 let possibleMoves = [];
 
+const pieceSelectedHTML = `<div class="space-overlay space-overlay-selected"></div>`;
+const validMoveIndicatorHTML = `<div class="space-overlay space-overlay-possible-move"></div>`;
+
 
 // ---------- HELPER FUNCTIONS ---------- //
+
+// add piece selected overlay to space
+const addPieceSelectedOverlay = (space) => {
+    space.insertAdjacentHTML("beforeend", pieceSelectedHTML);
+}
+
+// add valid move overlay to space
+const addValidMoveOverlay = (space) => {
+    space.insertAdjacentHTML("beforeend", validMoveIndicatorHTML);
+}
+
+// remove overlay from square
+const removeOverlay = (space) => {
+    if (!space) return;
+    const overlay = space.querySelector("div");
+    if (!overlay) return;
+    space.removeChild(overlay);
+}
 
 // set possible moves for piece
 const setPossibleMoves = (space, piece) => {
@@ -29,8 +50,7 @@ const showPossibleMoves = () => {
         const coordinates = move.coordinates;
         const row = document.getElementById("row-" + coordinates[1]);
         const space = row.querySelector(".space-" + coordinates[0]);
-        const highlightColour = move.type === "take" ? "red" : "blue";
-        highlightSpace(space, highlightColour);
+        addValidMoveOverlay(space);
     });
 }
 
@@ -40,7 +60,8 @@ const hidePossibleMoves = () => {
         const coordinates = move.coordinates;
         const row = document.getElementById("row-" + coordinates[1]);
         const space = row.querySelector(".space-" + coordinates[0]);
-        removeSpaceHighlight(space);
+        console.log(space);
+        removeOverlay(space);
     });
 }
 
@@ -56,7 +77,7 @@ const selectPiece = (space, image) => {
     setPossibleMoves(spaceSelected, pieceSelected);
 
     // highlight space clicked
-    highlightSpace(spaceSelected);
+    addPieceSelectedOverlay(spaceSelected);
 
     // show possible moves on board
     showPossibleMoves(pieceSelected);
@@ -64,7 +85,7 @@ const selectPiece = (space, image) => {
 
 // deselect piece
 const deselectPiece = () => {
-    removeSpaceHighlight(spaceSelected);
+    removeOverlay(spaceSelected);
     hidePossibleMoves(pieceSelected);
     spaceSelected = pieceSelected = null;
 }
