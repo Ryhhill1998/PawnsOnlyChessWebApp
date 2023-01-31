@@ -1,15 +1,19 @@
-// DOM elements
+// ---------- DOM ELEMENTS ---------- //
 const board = document.getElementById("board");
 
-// game variables
+// ---------- GAME VARIABLES ---------- //
 let pieceSelected, spaceSelected = null;
 let turn = "white";
 let gameOver = false;
 
+// ---------- HELPER FUNCTIONS ---------- //
+
+// add highlight to space
 const highlightSpace = (space) => {
     space.style.borderColor = "red";
 }
 
+// remove highlight from space
 const removeSpaceHighlight = (space) => {
     if (!space) return;
 
@@ -20,57 +24,13 @@ const removeSpaceHighlight = (space) => {
     }
 }
 
-const spaceClicked = ({target}) => {
-    if (gameOver) return;
-
-    const space = target.closest(".space");
-    const image = getImage(space);
-
-    if ((!image || getPieceColour(pieceSelected) !== getPieceColour(image)) && pieceSelected) {
-        // check if move is valid
-        if (!moveIsValid(spaceSelected, space)) return;
-
-        // UI
-        // check if space contains image (take move)
-        const spaceImage = space.querySelector("img");
-        if (spaceImage) {
-            space.removeChild(spaceImage);
-        }
-
-        spaceSelected.removeChild(pieceSelected);
-        const newImage = document.createElement("img");
-        space.appendChild(newImage);
-
-        let pieceImageSrc = pieceSelected.src;
-        if (!pieceHasMoved(pieceSelected)) {
-            pieceImageSrc = pieceSelected.src.split(".")[0] + "-moved.svg";
-        }
-        newImage.src = pieceImageSrc;
-
-        // check if game is over
-        const pieceColour = getPieceColour(pieceSelected);
-        gameOver = gameIsOver(space, pieceColour);
-
-        removeSpaceHighlight(spaceSelected);
-        spaceSelected = pieceSelected = null;
-        changeTurn();
-
-        if (gameOver) {
-            console.log(pieceColour + " wins!");
-        }
-
-    } else if (correctColourClicked(image?.src)) {
-        removeSpaceHighlight(spaceSelected);
-        pieceSelected = image;
-        spaceSelected = space;
-        highlightSpace(space);
-    }
-}
-
+// check game is over
 const gameIsOver = (moveSpace, colourMoved) => {
+    // get y value for piece that just moved
     const y = Number.parseInt(moveSpace.closest(".row").id.at(-1));
     let isOver;
 
+    // check if colour that just moved has won
     if (colourMoved === "white") {
         isOver = whiteHasWon(y);
     } else {
@@ -80,14 +40,17 @@ const gameIsOver = (moveSpace, colourMoved) => {
     return isOver;
 }
 
+// check if white has won
 const whiteHasWon = (y) => {
     return y === 0;
 }
 
+// check if black has won
 const blackHasWon = (y) => {
     return y === 7;
 }
 
+// check if the attempted move is valid
 const moveIsValid = (spaceSelected, spaceToMoveTo) => {
     // get current x and y positions of piece
     const x = Number.parseInt(spaceSelected.classList.value.at(-1));
@@ -117,73 +80,71 @@ const moveIsValid = (spaceSelected, spaceToMoveTo) => {
     return isValid;
 }
 
+// get the colour associated with the image element of a piece
 const getPieceColour = (image) => {
     if (!image) return;
 
     return image.src.includes("white") ? "white" : "black";
 }
 
+// determine whether the piece has moved by inspecting its image element
 const pieceHasMoved = (image) => image.src.includes("moved");
 
+// get an array of possible coordinates that the piece can move to
 const getPossibleMoves = (colour, hasMoved, startingX, startingY) => {
     const movement = colour === "white" ? -1 : 1;
     const possibleMoves = [];
 
-    let coordinates = [];
-
     if (spaceIsFree(startingX, startingY + movement)) {
-        coordinates.push(startingX);
-        coordinates.push(startingY + movement);
-        possibleMoves.push(coordinates);
-
-        coordinates = [];
+        updatePossibleMoves(possibleMoves, startingX, startingY + movement);
 
         if (!hasMoved && spaceIsFree(startingX, startingY + 2 * movement)) {
-            coordinates.push(startingX);
-            coordinates.push(startingY + 2 * movement);
-            possibleMoves.push(coordinates);
+            updatePossibleMoves(possibleMoves, startingX, startingY + 2 * movement);
         }
     }
 
-    if (colour === "white" && startingX !== 7 || colour === "black" && startingX !== 0) {
-        coordinates = [];
-
-        // check right take available
-        const colourToTake = colour === "white" ? "black" : "white";
-        const x = startingX - movement;
-        const y = startingY + movement;
-
-        if (takeIsPossible(colourToTake, x, y)) {
-            coordinates.push(x);
-            coordinates.push(y);
-            possibleMoves.push(coordinates);
-        }
-    }
-
-    if (colour === "white" && startingX !== 0 || colour === "black" && startingX !== 7) {
-        coordinates = [];
-
-        // check left take available
-        const colourToTake = colour === "white" ? "black" : "white";
-        const x = startingX + movement;
-        const y = startingY + movement;
-
-        if (takeIsPossible(colourToTake, x, y)) {
-            coordinates.push(x);
-            coordinates.push(y);
-            possibleMoves.push(coordinates);
-        }
-    }
+    addRightTakeMoves(possibleMoves, colour, movement, startingX, startingY);
+    addLeftTakeMoves(possibleMoves, colour, movement, startingX, startingY);
 
     return possibleMoves;
 }
 
+const updatePossibleMoves = (possibleMoves, x, y) => {
+    const coordinates = [x, y];
+    possibleMoves.push(coordinates);
+}
+
+const addRightTakeMoves = (possibleMoves, colour, movement, x, y) => {
+    if (colour === "white" && x === 7 || colour === "black" && x === 0) return;
+
+    addTakeMoves(possibleMoves, "right", colour, movement, x, y);
+}
+
+const addLeftTakeMoves = (possibleMoves, colour, movement, x, y) => {
+    if (colour === "white" && x === 0 || colour === "black" && x === 7) return;
+
+    addTakeMoves(possibleMoves, "left", colour, movement, x, y);
+}
+
+const addTakeMoves = (possibleMoves, takeDirection, colour, movement, x, y) => {
+    const colourToTake = colour === "white" ? "black" : "white";
+
+    const newX = takeDirection === "right" ? x - movement : x + movement;
+    const newY = y + movement;
+
+    if (takeIsPossible(colourToTake, newX, newY)) {
+        updatePossibleMoves(possibleMoves, newX, newY);
+    }
+}
+
+// check whether the space is empty
 const spaceIsFree = (x, y) => {
     const row = document.getElementById("row-" + y);
     const space = row.querySelector(".space-" + x);
     return getImage(space) === null;
 }
 
+// check whether the piece can take a piece of the opposite colour
 const takeIsPossible = (colourToTake, x, y) => {
     let isPossible = false;
 
@@ -198,9 +159,66 @@ const takeIsPossible = (colourToTake, x, y) => {
     return isPossible;
 }
 
+// change turn variable to opposite colour
 const changeTurn = () => turn = turn === "white" ? "black" : "white";
 
+// get the image element from a space
 const getImage = (space) => space.querySelector("img")
+
+// determine whether the piece selected has the right colour (determined by turn)
 const correctColourClicked = (imageSrc) => imageSrc?.includes(turn);
 
+// ---------- EVENT LISTENER FUNCTIONS ---------- //
+
+// space clicked handler function
+const spaceClicked = ({target}) => {
+    if (gameOver) return;
+
+    const space = target.closest(".space");
+    const image = getImage(space);
+
+    if ((!image || getPieceColour(pieceSelected) !== getPieceColour(image)) && pieceSelected) {
+        // check if move is valid
+        if (!moveIsValid(spaceSelected, space)) return;
+
+        // check if space contains image (take move)
+        const spaceImage = space.querySelector("img");
+        if (spaceImage) {
+            space.removeChild(spaceImage); // piece is taken so remove old image from new square
+        }
+
+        // remove image element from space piece is being moved from
+        spaceSelected.removeChild(pieceSelected);
+        const newImage = document.createElement("img");
+        space.appendChild(newImage);
+
+        // update image src for new square to be that of the piece being moved
+        let pieceImageSrc = pieceSelected.src;
+        if (!pieceHasMoved(pieceSelected)) {
+            // change image src to a moved piece if not alreafy
+            pieceImageSrc = pieceSelected.src.split(".")[0] + "-moved.svg";
+        }
+        newImage.src = pieceImageSrc;
+
+        // check if game is over
+        const pieceColour = getPieceColour(pieceSelected);
+        gameOver = gameIsOver(space, pieceColour);
+
+        removeSpaceHighlight(spaceSelected);
+        spaceSelected = pieceSelected = null;
+        changeTurn();
+
+        if (gameOver) {
+            console.log(pieceColour + " wins!");
+        }
+
+    } else if (correctColourClicked(image?.src)) {
+        removeSpaceHighlight(spaceSelected);
+        pieceSelected = image;
+        spaceSelected = space;
+        highlightSpace(space);
+    }
+}
+
+// ---------- EVENT LISTENERS ---------- //
 board.addEventListener("click", spaceClicked);
