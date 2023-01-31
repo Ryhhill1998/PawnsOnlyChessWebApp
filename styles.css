@@ -11,12 +11,12 @@ html {
 .game-container {
     height: 100vh;
     width: fit-content;
-    padding: 1em;
+    padding: 0.9em;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 0.5em;
+    justify-content: center;
+    gap: 0.9em;
     background-color: #222222;
 }
 
@@ -25,13 +25,20 @@ html {
     gap: 1em;
     background-color: #73777B;
     border-radius: 8px;
+    border: solid 2px #73777B;
     padding: 0.75em;
+    color: white;
+}
+
+.player-info.active {
+    border-color: #E3FDFD;
 }
 
 .player-info > div {
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: space-between;
+    padding: 0.25em 0;
 }
 
 .player-info > img {
@@ -61,8 +68,8 @@ html {
 }
 
 .space {
-    height: 70px;
-    width: 70px;
+    height: 65px;
+    width: 65px;
     position: relative;
 }
 

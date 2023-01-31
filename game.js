@@ -1,5 +1,7 @@
 // ---------- DOM ELEMENTS ---------- //
 const board = document.getElementById("board");
+const blackPlayerInfo = document.getElementById("black-player-info");
+const whitePlayerInfo = document.getElementById("white-player-info");
 
 
 // ---------- GAME VARIABLES ---------- //
@@ -243,6 +245,14 @@ const movePiece = (previousSpace, newSpace, piece) => {
     if (newSpaceImage) {
         // piece is taken so remove taken piece from new square
         newSpace.removeChild(newSpaceImage);
+
+        if (turn === "white") {
+            const piecesTaken = whitePlayerInfo.querySelector(".pieces-taken");
+            piecesTaken.appendChild(newSpaceImage);
+        } else {
+            const piecesTaken = blackPlayerInfo.querySelector(".pieces-taken");
+            piecesTaken.appendChild(newSpaceImage);
+        }
     }
 
     // remove image element from space piece is being moved from
@@ -277,7 +287,17 @@ const getPieceColour = (image) => {
 const pieceHasMoved = (image) => image.src.includes("moved");
 
 // change turn variable to opposite colour
-const changeTurn = () => turn = turn === "white" ? "black" : "white";
+const changeTurn = () => {
+    if (turn === "white") {
+        turn = "black";
+        whitePlayerInfo.classList.remove("active");
+        blackPlayerInfo.classList.add("active");
+    } else {
+        turn = "white";
+        blackPlayerInfo.classList.remove("active");
+        whitePlayerInfo.classList.add("active");
+    }
+}
 
 // get the image element from a space
 const getImage = (space) => space.querySelector("img")
