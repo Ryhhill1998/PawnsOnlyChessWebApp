@@ -1,12 +1,34 @@
 // ---------- DOM ELEMENTS ---------- //
 const board = document.getElementById("board");
 
+
 // ---------- GAME VARIABLES ---------- //
 let pieceSelected, spaceSelected = null;
 let turn = "white";
 let gameOver = false;
 
+
 // ---------- HELPER FUNCTIONS ---------- //
+
+// select piece if of correct colour
+const selectPiece = (space, image) => {
+    if (!correctColourClicked(image?.src)) return;
+
+    deselectPiece();
+
+    // select piece clicked by user
+    pieceSelected = image;
+    spaceSelected = space;
+
+    // highlight space clicked
+    highlightSpace(space);
+}
+
+// deselect piece
+const deselectPiece = () => {
+    removeSpaceHighlight(spaceSelected);
+    spaceSelected = pieceSelected = null;
+}
 
 // add highlight to space
 const highlightSpace = (space) => {
@@ -22,32 +44,6 @@ const removeSpaceHighlight = (space) => {
     } else {
         space.style.borderColor = "#E2DCC8";
     }
-}
-
-// check game is over
-const gameIsOver = (moveSpace, colourMoved) => {
-    // get y value for piece that just moved
-    const y = Number.parseInt(moveSpace.closest(".row").id.at(-1));
-    let isOver;
-
-    // check if colour that just moved has won
-    if (colourMoved === "white") {
-        isOver = whiteHasWon(y);
-    } else {
-        isOver = blackHasWon(y);
-    }
-
-    return isOver;
-}
-
-// check if white has won
-const whiteHasWon = (y) => {
-    return y === 0;
-}
-
-// check if black has won
-const blackHasWon = (y) => {
-    return y === 7;
 }
 
 // check if the attempted move is valid
@@ -79,16 +75,6 @@ const moveIsValid = (spaceSelected, spaceToMoveTo) => {
 
     return isValid;
 }
-
-// get the colour associated with the image element of a piece
-const getPieceColour = (image) => {
-    if (!image) return;
-
-    return image.src.includes("white") ? "white" : "black";
-}
-
-// determine whether the piece has moved by inspecting its image element
-const pieceHasMoved = (image) => image.src.includes("moved");
 
 // get an array of possible coordinates that the piece can move to
 const getPossibleMoves = (colour, hasMoved, startingX, startingY) => {
@@ -159,6 +145,42 @@ const takeIsPossible = (colourToTake, x, y) => {
     return isPossible;
 }
 
+// move piece on board
+const movePiece = (previousSpace, newSpace, piece) => {
+    // check if space contains image (take move)
+    const newSpaceImage = newSpace.querySelector("img");
+
+    if (newSpaceImage) {
+        // piece is taken so remove taken piece from new square
+        newSpace.removeChild(newSpaceImage);
+    }
+
+    // remove image element from space piece is being moved from
+    previousSpace.removeChild(piece);
+    const newImage = document.createElement("img");
+    newSpace.appendChild(newImage);
+
+    // update image src for new square to be that of the piece being moved
+    let pieceImageSrc = piece.src;
+
+    if (!pieceHasMoved(piece)) {
+        // change image src to a moved piece if first move
+        pieceImageSrc = piece.src.split(".")[0] + "-moved.svg";
+    }
+
+    newImage.src = pieceImageSrc;
+}
+
+// get the colour associated with the image element of a piece
+const getPieceColour = (image) => {
+    if (!image) return;
+
+    return image.src.includes("white") ? "white" : "black";
+}
+
+// determine whether the piece has moved by inspecting its image element
+const pieceHasMoved = (image) => image.src.includes("moved");
+
 // change turn variable to opposite colour
 const changeTurn = () => turn = turn === "white" ? "black" : "white";
 
@@ -167,6 +189,35 @@ const getImage = (space) => space.querySelector("img")
 
 // determine whether the piece selected has the right colour (determined by turn)
 const correctColourClicked = (imageSrc) => imageSrc?.includes(turn);
+
+// check game is over
+const checkGameOver = (moveSpace, pieceMoved) => {
+    const colour = getPieceColour(pieceMoved);
+
+    // get y value for piece that just moved
+    const y = Number.parseInt(moveSpace.closest(".row").id.at(-1));
+
+    // check if colour that just moved has won
+    if (colour === "white") {
+        gameOver = whiteHasWon(y);
+    } else {
+        gameOver = blackHasWon(y);
+    }
+
+    if (gameOver) {
+        console.log(colour + " wins!");
+    }
+}
+
+// check if white has won
+const whiteHasWon = (y) => {
+    return y === 0;
+}
+
+// check if black has won
+const blackHasWon = (y) => {
+    return y === 7;
+}
 
 // ---------- EVENT LISTENER FUNCTIONS ---------- //
 
@@ -181,59 +232,18 @@ const spaceClicked = ({target}) => {
         // check if move is valid
         if (!moveIsValid(spaceSelected, space)) return;
 
-        // check if space contains image (take move)
-        const spaceImage = space.querySelector("img");
-        if (spaceImage) {
-            space.removeChild(spaceImage); // piece is taken so remove old image from new square
-        }
-
-        // remove image element from space piece is being moved from
-        spaceSelected.removeChild(pieceSelected);
-        const newImage = document.createElement("img");
-        space.appendChild(newImage);
-
-        // update image src for new square to be that of the piece being moved
-        let pieceImageSrc = pieceSelected.src;
-        if (!pieceHasMoved(pieceSelected)) {
-            // change image src to a moved piece if not already
-            pieceImageSrc = pieceSelected.src.split(".")[0] + "-moved.svg";
-        }
-        newImage.src = pieceImageSrc;
+        movePiece(spaceSelected, space, pieceSelected);
 
         // check if game is over
-        const pieceColour = getPieceColour(pieceSelected);
-        gameOver = gameIsOver(space, pieceColour);
+        checkGameOver(space, pieceSelected);
 
         deselectPiece();
 
-        if (gameOver) {
-            console.log(pieceColour + " wins!");
-        } else {
-            changeTurn();
-        }
+        changeTurn();
 
     } else {
         selectPiece(space, image);
     }
-}
-
-const selectPiece = (space, image) => {
-    if (!correctColourClicked(image?.src)) return;
-
-    // remove highlight from previously highlighted space
-    removeSpaceHighlight(spaceSelected);
-
-    // select piece clicked by user
-    pieceSelected = image;
-    spaceSelected = space;
-
-    // highlight space clicked
-    highlightSpace(space);
-}
-
-const deselectPiece = () => {
-    removeSpaceHighlight(spaceSelected);
-    spaceSelected = pieceSelected = null;
 }
 
 // ---------- EVENT LISTENERS ---------- //
