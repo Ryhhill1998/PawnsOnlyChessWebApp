@@ -5,19 +5,24 @@
 }
 
 html {
-    background-color: lightgrey;
+    background-color: #222222;
 }
 
 .game-container {
     height: 100vh;
+    width: fit-content;
+    padding: 0 2em;
+    margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #434242;
 }
 
 .board {
     width: fit-content;
-    border: solid 5px black;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .row {

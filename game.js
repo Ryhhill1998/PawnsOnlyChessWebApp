@@ -341,8 +341,6 @@ const spaceClicked = ({target}) => {
     } else {
         selectPiece(space, image);
     }
-
-    console.log(spaceSelected)
 }
 
 // ---------- EVENT LISTENERS ---------- //
