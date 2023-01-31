@@ -6,9 +6,40 @@ const board = document.getElementById("board");
 let pieceSelected, spaceSelected = null;
 let turn = "white";
 let gameOver = false;
+let possibleMoves = [];
 
 
 // ---------- HELPER FUNCTIONS ---------- //
+
+// set possible moves for piece
+const setPossibleMoves = (space, piece) => {
+    // get current x and y positions of piece
+    const x = Number.parseInt(space.classList.value.at(-1));
+    const y = Number.parseInt(space.closest(".row").id.at(-1));
+
+    // get possible moves for piece
+    const pieceColour = getPieceColour(piece);
+    const hasMoved = pieceHasMoved(piece);
+    possibleMoves = getPossibleMoves(pieceColour, hasMoved, x, y);
+}
+
+// show possible moves for piece selected
+const showPossibleMoves = () => {
+    possibleMoves.forEach(move => {
+        const row = document.getElementById("row-" + move[1]);
+        const space = row.querySelector(".space-" + move[0]);
+        highlightSpace(space, "blue");
+    });
+}
+
+// hide possible moves for previous piece selected
+const hidePossibleMoves = () => {
+    possibleMoves.forEach(move => {
+        const row = document.getElementById("row-" + move[1]);
+        const space = row.querySelector(".space-" + move[0]);
+        removeSpaceHighlight(space);
+    });
+}
 
 // select piece if of correct colour
 const selectPiece = (space, image) => {
@@ -19,20 +50,25 @@ const selectPiece = (space, image) => {
     // select piece clicked by user
     pieceSelected = image;
     spaceSelected = space;
+    setPossibleMoves(spaceSelected, pieceSelected);
 
     // highlight space clicked
-    highlightSpace(space);
+    highlightSpace(spaceSelected);
+
+    // show possible moves on board
+    showPossibleMoves(pieceSelected);
 }
 
 // deselect piece
 const deselectPiece = () => {
     removeSpaceHighlight(spaceSelected);
+    hidePossibleMoves(pieceSelected);
     spaceSelected = pieceSelected = null;
 }
 
 // add highlight to space
-const highlightSpace = (space) => {
-    space.style.borderColor = "red";
+const highlightSpace = (space, colour = "red") => {
+    space.style.borderColor = colour;
 }
 
 // remove highlight from space
@@ -48,15 +84,6 @@ const removeSpaceHighlight = (space) => {
 
 // check if the attempted move is valid
 const moveIsValid = (spaceSelected, spaceToMoveTo) => {
-    // get current x and y positions of piece
-    const x = Number.parseInt(spaceSelected.classList.value.at(-1));
-    const y = Number.parseInt(spaceSelected.closest(".row").id.at(-1));
-
-    // get possible moves for piece
-    const pieceColour = getPieceColour(pieceSelected);
-    const hasMoved = pieceHasMoved(pieceSelected);
-    const possibleMoves = getPossibleMoves(pieceColour, hasMoved, x, y);
-
     // get new x and y positions of move
     const newX = Number.parseInt(spaceToMoveTo.classList.value.at(-1));
     const newY = Number.parseInt(spaceToMoveTo.closest(".row").id.at(-1));
