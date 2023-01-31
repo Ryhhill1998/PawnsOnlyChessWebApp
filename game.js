@@ -195,7 +195,7 @@ const spaceClicked = ({target}) => {
         // update image src for new square to be that of the piece being moved
         let pieceImageSrc = pieceSelected.src;
         if (!pieceHasMoved(pieceSelected)) {
-            // change image src to a moved piece if not alreafy
+            // change image src to a moved piece if not already
             pieceImageSrc = pieceSelected.src.split(".")[0] + "-moved.svg";
         }
         newImage.src = pieceImageSrc;
@@ -204,20 +204,36 @@ const spaceClicked = ({target}) => {
         const pieceColour = getPieceColour(pieceSelected);
         gameOver = gameIsOver(space, pieceColour);
 
-        removeSpaceHighlight(spaceSelected);
-        spaceSelected = pieceSelected = null;
-        changeTurn();
+        deselectPiece();
 
         if (gameOver) {
             console.log(pieceColour + " wins!");
+        } else {
+            changeTurn();
         }
 
-    } else if (correctColourClicked(image?.src)) {
-        removeSpaceHighlight(spaceSelected);
-        pieceSelected = image;
-        spaceSelected = space;
-        highlightSpace(space);
+    } else {
+        selectPiece(space, image);
     }
+}
+
+const selectPiece = (space, image) => {
+    if (!correctColourClicked(image?.src)) return;
+
+    // remove highlight from previously highlighted space
+    removeSpaceHighlight(spaceSelected);
+
+    // select piece clicked by user
+    pieceSelected = image;
+    spaceSelected = space;
+
+    // highlight space clicked
+    highlightSpace(space);
+}
+
+const deselectPiece = () => {
+    removeSpaceHighlight(spaceSelected);
+    spaceSelected = pieceSelected = null;
 }
 
 // ---------- EVENT LISTENERS ---------- //
