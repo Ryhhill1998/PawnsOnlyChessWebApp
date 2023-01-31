@@ -5,23 +5,54 @@
 }
 
 html {
-    background-color: #222222;
+    background-color: #434242;
 }
 
 .game-container {
     height: 100vh;
     width: fit-content;
-    padding: 0 2em;
+    padding: 1em;
     margin: 0 auto;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #434242;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.5em;
+    background-color: #222222;
+}
+
+.player-info {
+    display: flex;
+    gap: 1em;
+    background-color: #73777B;
+    border-radius: 8px;
+    padding: 0.75em;
+}
+
+.player-info > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.player-info > img {
+    background-color: white;
+    border-radius: 8px;
+    padding: 0.5em;
+}
+
+.pieces-taken {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+}
+
+.pieces-taken img {
+    width: 30px;
 }
 
 .board {
     width: fit-content;
-    border-radius: 10px;
+    border-radius: 8px;
     overflow: hidden;
 }
 
@@ -30,8 +61,8 @@ html {
 }
 
 .space {
-    height: 75px;
-    width: 75px;
+    height: 70px;
+    width: 70px;
     position: relative;
 }
 
@@ -71,7 +102,7 @@ html {
     background-color: #E3FDFD;
 }
 
-img {
+.space img {
     position: absolute;
     z-index: 10;
     width: 100%;
