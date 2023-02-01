@@ -7,7 +7,7 @@
 }
 
 html {
-    background-color: #434242;
+    background-color: #222222;
     font-family: 'Roboto', sans-serif;
     letter-spacing: 0.1em;
 }
@@ -15,13 +15,13 @@ html {
 .game-container {
     height: 100vh;
     width: fit-content;
-    padding: 0.9em;
+    padding: 1em;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 0.9em;
-    background-color: #222222;
+    gap: 1em;
+    /*background-color: #222222;*/
 }
 
 .player-info {
@@ -72,8 +72,8 @@ html {
 }
 
 .space {
-    height: 65px;
-    width: 65px;
+    height: min(8vh, 11vw);
+    width: min(8vh, 11vw);
     position: relative;
 }
 
