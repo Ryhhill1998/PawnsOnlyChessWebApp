@@ -12,16 +12,15 @@ html {
     letter-spacing: 0.1em;
 }
 
+header {
+    padding: 1.5em;
+    text-align: center;
+    color: lightgrey;
+}
+
 .game-container {
-    height: 100vh;
     width: fit-content;
-    padding: 1em;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 1em;
-    /*background-color: #222222;*/
 }
 
 .player-info {
@@ -74,9 +73,9 @@ html {
 }
 
 .board {
-    width: fit-content;
     border-radius: 8px;
     overflow: hidden;
+    margin: 1em auto;
 }
 
 .row {
@@ -84,8 +83,8 @@ html {
 }
 
 .space {
-    height: min(8vh, 11vw);
-    width: min(8vh, 11vw);
+    height: 50px;
+    width: 50px;
     position: relative;
 }
 
