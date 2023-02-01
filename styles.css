@@ -38,6 +38,10 @@ html {
     border-color: #E3FDFD;
 }
 
+.player-info.winner {
+    border-color: #FAC213;
+}
+
 .player-info > div {
     display: flex;
     flex-direction: column;
@@ -49,6 +53,14 @@ html {
     background-color: white;
     border-radius: 8px;
     padding: 0.5em;
+}
+
+.player-info.winner > img {
+    background-color: #FAC213;
+}
+
+.player-info.winner > img {
+    background-color: #FAC213;
 }
 
 .pieces-taken {

@@ -319,19 +319,31 @@ const checkGameOver = (moveSpace, pieceMoved) => {
         gameOver = blackHasWon(y);
     }
 
-    if (gameOver) {
-        console.log(colour + " wins!");
+    if (!gameOver) {
+        changeTurn();
     }
 }
 
 // check if white has won
 const whiteHasWon = (y) => {
-    return y === 0;
+    const hasWon = y === 0;
+
+    if (hasWon) {
+        whitePlayerInfo.classList.add("winner");
+    }
+
+    return hasWon;
 }
 
 // check if black has won
 const blackHasWon = (y) => {
-    return y === 7;
+    const hasWon = y === 7;
+
+    if (hasWon) {
+        blackPlayerInfo.classList.add("winner");
+    }
+
+    return hasWon;
 }
 
 // ---------- EVENT LISTENER FUNCTIONS ---------- //
@@ -353,8 +365,6 @@ const spaceClicked = ({target}) => {
         checkGameOver(space, pieceSelected);
 
         deselectPiece();
-
-        changeTurn();
 
     } else if (space === spaceSelected) {
         deselectPiece();
