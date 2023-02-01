@@ -65,11 +65,10 @@ header {
 .pieces-taken {
     display: flex;
     align-items: flex-start;
-    position: relative;
 }
 
 .pieces-taken img {
-    width: 30px;
+    width: 25px;
 }
 
 .board {

@@ -16,9 +16,6 @@ let previousMove = {
     endSpace: null
 };
 
-const blackPawnHTML = `<img src="pieces/black/pawn.svg" alt="">`;
-const whitePawnHTML = `<img src="pieces/white/pawn.svg" alt="">`;
-
 const pieceSelectedHTML = `<div class="space-overlay space-overlay-selected"></div>`;
 const validMoveIndicatorHTML = `<div class="space-overlay space-overlay-possible-move"></div>`;
 const validTakeIndicatorHTML = `<div class="space-overlay space-overlay-possible-take"></div>`;
