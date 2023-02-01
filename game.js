@@ -16,6 +16,13 @@ let previousMove = {
     endSpace: null
 };
 
+const piecesTaken = {
+    white: 0,
+    black: 0
+};
+
+const maxPiecesTaken = 4;
+
 const pieceSelectedHTML = `<div class="space-overlay space-overlay-selected"></div>`;
 const validMoveIndicatorHTML = `<div class="space-overlay space-overlay-possible-move"></div>`;
 const validTakeIndicatorHTML = `<div class="space-overlay space-overlay-possible-take"></div>`;
@@ -248,11 +255,40 @@ const movePiece = (previousSpace, newSpace, piece) => {
         newSpace.removeChild(newSpaceImage);
 
         if (turn === "white") {
-            const piecesTaken = whitePlayerInfo.querySelector(".pieces-taken");
-            piecesTaken.appendChild(newSpaceImage);
+            const piecesTakenElement = whitePlayerInfo.querySelector(".pieces-taken");
+            piecesTaken.white++;
+
+            if (piecesTaken.white <= maxPiecesTaken) {
+                console.log("TRUE")
+                piecesTakenElement.appendChild(newSpaceImage);
+            } else {
+                const additionalPieces = piecesTaken.white - maxPiecesTaken;
+                const additionalPiecesElement = whitePlayerInfo.querySelector(".additional-pieces");
+
+                if (!additionalPiecesElement) {
+                    const additionalPiecesHTML = `<p class="additional-pieces">+1</p>`;
+                    piecesTakenElement.insertAdjacentHTML("beforeend", additionalPiecesHTML);
+                } else {
+                    additionalPiecesElement.innerHTML = "+" + additionalPieces;
+                }
+            }
         } else {
-            const piecesTaken = blackPlayerInfo.querySelector(".pieces-taken");
-            piecesTaken.appendChild(newSpaceImage);
+            const piecesTakenElement = blackPlayerInfo.querySelector(".pieces-taken");
+            piecesTaken.black++;
+
+            if (piecesTaken.black <= maxPiecesTaken) {
+                piecesTakenElement.appendChild(newSpaceImage);
+            } else {
+                const additionalPieces = piecesTaken.black - maxPiecesTaken;
+                const additionalPiecesElement = blackPlayerInfo.querySelector(".additional-pieces");
+
+                if (!additionalPiecesElement) {
+                    const additionalPiecesHTML = `<p class="additional-pieces">+1</p>`;
+                    piecesTakenElement.insertAdjacentHTML("beforeend", additionalPiecesHTML);
+                } else {
+                    additionalPiecesElement.innerHTML = "+" + additionalPieces;
+                }
+            }
         }
     }
 
