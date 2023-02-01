@@ -3,6 +3,7 @@ const board = document.getElementById("board");
 const blackPlayerInfo = document.getElementById("black-player-info");
 const whitePlayerInfo = document.getElementById("white-player-info");
 
+const newImageElement = document.createElement("img");
 
 // ---------- GAME VARIABLES ---------- //
 let pieceSelected, spaceSelected = null;
@@ -14,6 +15,9 @@ let previousMove = {
     startSpace: null,
     endSpace: null
 };
+
+const blackPawnHTML = `<img src="pieces/black/pawn.svg" alt="">`;
+const whitePawnHTML = `<img src="pieces/white/pawn.svg" alt="">`;
 
 const pieceSelectedHTML = `<div class="space-overlay space-overlay-selected"></div>`;
 const validMoveIndicatorHTML = `<div class="space-overlay space-overlay-possible-move"></div>`;
@@ -257,7 +261,7 @@ const movePiece = (previousSpace, newSpace, piece) => {
 
     // remove image element from space piece is being moved from
     previousSpace.removeChild(piece);
-    const newImage = document.createElement("img");
+    const newImage = newImageElement.cloneNode();
     newSpace.appendChild(newImage);
 
     // update image src for new square to be that of the piece being moved
