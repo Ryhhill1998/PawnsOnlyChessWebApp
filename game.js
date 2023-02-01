@@ -120,7 +120,7 @@ const hidePreviousMove = () => {
 
 // select piece if of correct colour
 const selectPiece = (space, image) => {
-    if (!correctColourClicked(image?.src)) return;
+    if (!correctColourClicked(image?.getAttribute("src"))) return;
 
     deselectPiece();
 
@@ -261,14 +261,14 @@ const movePiece = (previousSpace, newSpace, piece) => {
     newSpace.appendChild(newImage);
 
     // update image src for new square to be that of the piece being moved
-    let pieceImageSrc = piece.src;
+    let pieceImageSrc = piece.getAttribute("src");
 
     if (!pieceHasMoved(piece)) {
         // change image src to a moved piece if first move
-        pieceImageSrc = piece.src.split(".")[0] + "-moved.svg";
+        pieceImageSrc = piece.getAttribute("src").split(".")[0] + "-moved.svg";
     }
 
-    newImage.src = pieceImageSrc;
+    newImage.setAttribute("src", pieceImageSrc);
 
     hidePreviousMove();
     previousMove.startSpace = previousSpace;
@@ -280,11 +280,11 @@ const movePiece = (previousSpace, newSpace, piece) => {
 const getPieceColour = (image) => {
     if (!image) return;
 
-    return image.src.includes("white") ? "white" : "black";
+    return image.getAttribute("src").includes("white") ? "white" : "black";
 }
 
 // determine whether the piece has moved by inspecting its image element
-const pieceHasMoved = (image) => image.src.includes("moved");
+const pieceHasMoved = (image) => image.getAttribute("src").includes("moved");
 
 // change turn variable to opposite colour
 const changeTurn = () => {
