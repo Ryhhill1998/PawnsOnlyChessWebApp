@@ -3,7 +3,8 @@ const board = document.getElementById("board");
 const blackPlayerInfo = document.getElementById("black-player-info");
 const whitePlayerInfo = document.getElementById("white-player-info");
 
-const newImageElement = document.createElement("img");
+const undoButton = document.getElementById("undo-button");
+const infoButton = document.getElementById("info-button");
 
 // ---------- GAME VARIABLES ---------- //
 let pieceSelected, spaceSelected = null;
@@ -11,9 +12,10 @@ let turn = "white";
 let gameOver = false;
 let possibleMoves = [];
 
-let previousMove = {
+const previousMove = {
     startSpace: null,
-    endSpace: null
+    endSpace: null,
+    firstMove: false
 };
 
 const piecesTaken = {
@@ -294,22 +296,22 @@ const movePiece = (previousSpace, newSpace, piece) => {
 
     // remove image element from space piece is being moved from
     previousSpace.removeChild(piece);
-    const newImage = newImageElement.cloneNode();
-    newSpace.appendChild(newImage);
+    newSpace.appendChild(piece);
 
     // update image src for new square to be that of the piece being moved
-    let pieceImageSrc = piece.getAttribute("src");
+    let firstMove = false;
 
     if (!pieceHasMoved(piece)) {
         // change image src to a moved piece if first move
-        pieceImageSrc = piece.getAttribute("src").split(".")[0] + "-moved.svg";
+        const pieceImageSrc = piece.getAttribute("src").split(".")[0] + "-moved.svg";
+        piece.setAttribute("src", pieceImageSrc);
+        firstMove = true;
     }
-
-    newImage.setAttribute("src", pieceImageSrc);
 
     hidePreviousMove();
     previousMove.startSpace = previousSpace;
     previousMove.endSpace = newSpace;
+    previousMove.firstMove = firstMove;
     showPreviousMove();
 }
 
@@ -410,5 +412,17 @@ const spaceClicked = ({target}) => {
     }
 }
 
+// undo move handler function
+const undoMove = () => {
+    const start = previousMove.startSpace;
+    const end = previousMove.endSpace;
+    const pieceMoved = end.querySelector("img");
+    if (!pieceMoved) return;
+    end.removeChild(pieceMoved);
+    start.appendChild(pieceMoved);
+    changeTurn();
+}
+
 // ---------- EVENT LISTENERS ---------- //
 board.addEventListener("click", spaceClicked);
+undoButton.addEventListener("click", undoMove);

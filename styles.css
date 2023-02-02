@@ -75,6 +75,14 @@ button i {
     color: #3A8891;
 }
 
+#undo-button {
+    transition: ease-in 0.5s;
+}
+
+#undo-button:hover {
+    transform: rotate(-100deg);
+}
+
 .pieces-taken {
     display: flex;
     align-items: center;
