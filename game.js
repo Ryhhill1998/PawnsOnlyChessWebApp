@@ -11,6 +11,7 @@ let pieceSelected, spaceSelected = null;
 let turn = "white";
 let gameOver = false;
 let possibleMoves = [];
+let undoJustUsed = false;
 
 const lastMove = {
     startSpace: null,
@@ -257,17 +258,18 @@ const takeIsPossible = (colourToTake, x, y) => {
 const movePiece = (previousSpace, newSpace, piece) => {
     // check if space contains image (take move)
     const newSpaceImage = newSpace.querySelector("img");
+    let moveIsTake, isFirstMove = false;
 
     // check if move is a take move
     if (newSpaceImage) {
         // set last move as a take move
-        lastMove.take = true;
+        moveIsTake = true;
 
         // piece is taken so remove taken piece from new square
         newSpace.removeChild(newSpaceImage);
 
         if (turn === "white") {
-            const piecesTakenElement = whitePlayerInfo.querySelector(".pieces-taken");
+            const piecesTakenElement = whitePlayerInfo.querySelector(".pieces-taken .pieces");
             piecesTaken.white++;
 
             if (piecesTaken.white <= maxPiecesTaken) {
@@ -275,16 +277,10 @@ const movePiece = (previousSpace, newSpace, piece) => {
             } else {
                 const additionalPieces = piecesTaken.white - maxPiecesTaken;
                 const additionalPiecesElement = whitePlayerInfo.querySelector(".additional-pieces");
-
-                if (!additionalPiecesElement) {
-                    const additionalPiecesHTML = `<p class="additional-pieces">+1</p>`;
-                    piecesTakenElement.insertAdjacentHTML("beforeend", additionalPiecesHTML);
-                } else {
-                    additionalPiecesElement.innerHTML = "+" + additionalPieces;
-                }
+                additionalPiecesElement.innerHTML = "+" + additionalPieces;
             }
         } else {
-            const piecesTakenElement = blackPlayerInfo.querySelector(".pieces-taken");
+            const piecesTakenElement = blackPlayerInfo.querySelector(".pieces-taken .pieces");
             piecesTaken.black++;
 
             if (piecesTaken.black <= maxPiecesTaken) {
@@ -292,13 +288,7 @@ const movePiece = (previousSpace, newSpace, piece) => {
             } else {
                 const additionalPieces = piecesTaken.black - maxPiecesTaken;
                 const additionalPiecesElement = blackPlayerInfo.querySelector(".additional-pieces");
-
-                if (!additionalPiecesElement) {
-                    const additionalPiecesHTML = `<p class="additional-pieces">+1</p>`;
-                    piecesTakenElement.insertAdjacentHTML("beforeend", additionalPiecesHTML);
-                } else {
-                    additionalPiecesElement.innerHTML = "+" + additionalPieces;
-                }
+                additionalPiecesElement.innerHTML = "+" + additionalPieces;
             }
         }
     }
@@ -311,7 +301,7 @@ const movePiece = (previousSpace, newSpace, piece) => {
         // change image src to a moved piece if first move
         const pieceImageSrc = piece.getAttribute("src").split(".")[0] + "-moved.svg";
         piece.setAttribute("src", pieceImageSrc);
-        lastMove.firstMove = true;
+        isFirstMove = true;
     }
 
     hidePreviousMove();
@@ -321,8 +311,12 @@ const movePiece = (previousSpace, newSpace, piece) => {
 
     lastMove.startSpace = previousSpace;
     lastMove.endSpace = newSpace;
+    lastMove.firstMove = isFirstMove;
+    lastMove.take = moveIsTake;
 
     showPreviousMove();
+
+    undoJustUsed = false;
 }
 
 // get the colour associated with the image element of a piece
@@ -423,9 +417,9 @@ const spaceClicked = ({target}) => {
 }
 
 // undo move handler function
-
-// TODO -- FIX THIS SO THAT IT REPLACES A PIECE THAT WAS TAKEN
 const undoMove = () => {
+    if (undoJustUsed) return;
+
     const start = lastMove.startSpace;
     const end = lastMove.endSpace;
 
@@ -446,10 +440,28 @@ const undoMove = () => {
     if (lastMove.take) {
         // remove last child from pieces selected and append it to the end square of the last move
         const playerInfo = turn === "white" ? whitePlayerInfo : blackPlayerInfo;
-        const piecesTaken = playerInfo.querySelector(".pieces-taken");
-        const lastPieceTaken = [...piecesTaken.querySelectorAll("img")].at(-1);
-        piecesTaken.removeChild(lastPieceTaken);
+        const taken = turn === "white" ? --piecesTaken.white : --piecesTaken.black;
+
+        console.log(taken);
+
+        const piecesTakenElement = playerInfo.querySelector(".pieces-taken .pieces");
+        const lastPieceTaken = [...piecesTakenElement.querySelectorAll("img")].at(-1);
+        piecesTakenElement.removeChild(lastPieceTaken);
         end.appendChild(lastPieceTaken);
+
+        const additionalPiecesElement = playerInfo.querySelector(".additional-pieces");
+        const additionalQuantity = taken - maxPiecesTaken;
+
+        if (additionalQuantity <= 0) {
+            additionalPiecesElement.innerHTML = "";
+
+            if (!additionalQuantity) {
+                piecesTakenElement.appendChild(lastPieceTaken.cloneNode());
+            }
+        } else {
+            additionalPiecesElement.innerHTML = "+" + additionalQuantity;
+            piecesTakenElement.appendChild(lastPieceTaken.cloneNode());
+        }
     }
 
     hidePreviousMove();
@@ -458,6 +470,8 @@ const undoMove = () => {
     lastMove.endSpace = secondLastMove.endSpace;
 
     showPreviousMove();
+
+    undoJustUsed = true;
 }
 
 // ---------- EVENT LISTENERS ---------- //
