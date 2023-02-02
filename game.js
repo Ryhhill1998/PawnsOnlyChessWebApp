@@ -15,7 +15,8 @@ let possibleMoves = [];
 const lastMove = {
     startSpace: null,
     endSpace: null,
-    firstMove: false
+    firstMove: false,
+    take: false
 };
 
 const secondLastMove = {
@@ -257,7 +258,11 @@ const movePiece = (previousSpace, newSpace, piece) => {
     // check if space contains image (take move)
     const newSpaceImage = newSpace.querySelector("img");
 
+    // check if move is a take move
     if (newSpaceImage) {
+        // set last move as a take move
+        lastMove.take = true;
+
         // piece is taken so remove taken piece from new square
         newSpace.removeChild(newSpaceImage);
 
@@ -302,22 +307,21 @@ const movePiece = (previousSpace, newSpace, piece) => {
     previousSpace.removeChild(piece);
     newSpace.appendChild(piece);
 
-    // update image src for new square to be that of the piece being moved
-    let firstMove = false;
-
     if (!pieceHasMoved(piece)) {
         // change image src to a moved piece if first move
         const pieceImageSrc = piece.getAttribute("src").split(".")[0] + "-moved.svg";
         piece.setAttribute("src", pieceImageSrc);
-        firstMove = true;
+        lastMove.firstMove = true;
     }
 
     hidePreviousMove();
+
     secondLastMove.startSpace = lastMove.startSpace;
     secondLastMove.endSpace = lastMove.endSpace;
+
     lastMove.startSpace = previousSpace;
     lastMove.endSpace = newSpace;
-    lastMove.firstMove = firstMove;
+
     showPreviousMove();
 }
 
@@ -424,9 +428,11 @@ const spaceClicked = ({target}) => {
 const undoMove = () => {
     const start = lastMove.startSpace;
     const end = lastMove.endSpace;
+
+    if (!start || !end) return;
+
     const pieceMoved = end.querySelector("img");
 
-    if (!pieceMoved) return;
     end.removeChild(pieceMoved);
     start.appendChild(pieceMoved);
 
@@ -436,6 +442,15 @@ const undoMove = () => {
     }
 
     changeTurn();
+
+    if (lastMove.take) {
+        // remove last child from pieces selected and append it to the end square of the last move
+        const playerInfo = turn === "white" ? whitePlayerInfo : blackPlayerInfo;
+        const piecesTaken = playerInfo.querySelector(".pieces-taken");
+        const lastPieceTaken = [...piecesTaken.querySelectorAll("img")].at(-1);
+        piecesTaken.removeChild(lastPieceTaken);
+        end.appendChild(lastPieceTaken);
+    }
 
     hidePreviousMove();
 
