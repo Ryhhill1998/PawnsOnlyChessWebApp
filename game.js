@@ -12,10 +12,15 @@ let turn = "white";
 let gameOver = false;
 let possibleMoves = [];
 
-const previousMove = {
+const lastMove = {
     startSpace: null,
     endSpace: null,
     firstMove: false
+};
+
+const secondLastMove = {
+    startSpace: null,
+    endSpace: null
 };
 
 const piecesTaken = {
@@ -118,14 +123,14 @@ const hidePossibleMoves = () => {
 
 // show previous move on board
 const showPreviousMove = () => {
-    addPieceSelectedOverlay(previousMove.startSpace);
-    addPieceSelectedOverlay(previousMove.endSpace);
+    addPieceSelectedOverlay(lastMove.startSpace);
+    addPieceSelectedOverlay(lastMove.endSpace);
 }
 
 // remove previous move from board
 const hidePreviousMove = () => {
-    removeSelectedOverlay(previousMove.startSpace);
-    removeSelectedOverlay(previousMove.endSpace);
+    removeSelectedOverlay(lastMove.startSpace);
+    removeSelectedOverlay(lastMove.endSpace);
 }
 
 // select piece if of correct colour
@@ -261,7 +266,6 @@ const movePiece = (previousSpace, newSpace, piece) => {
             piecesTaken.white++;
 
             if (piecesTaken.white <= maxPiecesTaken) {
-                console.log("TRUE")
                 piecesTakenElement.appendChild(newSpaceImage);
             } else {
                 const additionalPieces = piecesTaken.white - maxPiecesTaken;
@@ -309,9 +313,11 @@ const movePiece = (previousSpace, newSpace, piece) => {
     }
 
     hidePreviousMove();
-    previousMove.startSpace = previousSpace;
-    previousMove.endSpace = newSpace;
-    previousMove.firstMove = firstMove;
+    secondLastMove.startSpace = lastMove.startSpace;
+    secondLastMove.endSpace = lastMove.endSpace;
+    lastMove.startSpace = previousSpace;
+    lastMove.endSpace = newSpace;
+    lastMove.firstMove = firstMove;
     showPreviousMove();
 }
 
@@ -413,14 +419,30 @@ const spaceClicked = ({target}) => {
 }
 
 // undo move handler function
+
+// TODO -- FIX THIS SO THAT IT REPLACES A PIECE THAT WAS TAKEN
 const undoMove = () => {
-    const start = previousMove.startSpace;
-    const end = previousMove.endSpace;
+    const start = lastMove.startSpace;
+    const end = lastMove.endSpace;
     const pieceMoved = end.querySelector("img");
+
     if (!pieceMoved) return;
     end.removeChild(pieceMoved);
     start.appendChild(pieceMoved);
+
+    if (lastMove.firstMove) {
+        const updatedImageSrc = pieceMoved.getAttribute("src").split("-")[0] + ".svg";
+        pieceMoved.setAttribute("src", updatedImageSrc);
+    }
+
     changeTurn();
+
+    hidePreviousMove();
+
+    lastMove.startSpace = secondLastMove.startSpace;
+    lastMove.endSpace = secondLastMove.endSpace;
+
+    showPreviousMove();
 }
 
 // ---------- EVENT LISTENERS ---------- //
