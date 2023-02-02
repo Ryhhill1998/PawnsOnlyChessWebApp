@@ -14,8 +14,11 @@ html {
 
 header {
     padding: 1.5em;
-    text-align: center;
     color: lightgrey;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
 }
 
 .game-container {
@@ -60,6 +63,16 @@ header {
 
 .player-info.winner > img {
     background-color: #FAC213;
+}
+
+button {
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+button i {
+    color: #3A8891;
 }
 
 .pieces-taken {
