@@ -4,8 +4,8 @@ const validMoveIndicatorHTML = `<div class="space-overlay space-overlay-possible
 const validTakeIndicatorHTML = `<div class="space-overlay space-overlay-possible-take"></div>`;
 
 class View {
-    #board;
 
+    #board;
     #blackPlayerInfo;
     #whitePlayerInfo;
     #undoButton;
@@ -30,6 +30,14 @@ class View {
         return identifier === "#"
             ? parentElement.getElementById(selector.slice(1))
             : parentElement.querySelector(selector);
+    }
+
+    #addClassToElement(element, className) {
+        element.classList.add(className);
+    }
+
+    #removeClassFromElement(element, className) {
+        element.classList.remove(className);
     }
 
     #addOverlay(space, html) {
@@ -85,15 +93,15 @@ class View {
         removeValidTakeOverlay(space);
     }
 
-    #getSpaceFromMove(move) {
-        const coordinates = move.coordinates;
-        const row = this.#getElement("#row-" + coordinates[1]);
-        return this.#getElement(row,".space-" + coordinates[0]);
+    #getSpaceFromCoordinates(x, y) {
+        const row = this.#getElement("#row-" + y);
+        return this.#getElement(row,".space-" + x);
     }
 
     showPossibleMoves(possibleMoves) {
         possibleMoves.forEach(move => {
-            const space = this.#getSpaceFromMove(move);
+            const [x, y] = move.coordinates;
+            const space = this.#getSpaceFromCoordinates(x, y);
 
             move.type === "take"
                 ? addValidTakeOverlay(space)
@@ -131,6 +139,28 @@ class View {
         return space.querySelector("img");
     }
 
+    spaceIsFree(x, y) {
+        const space = this.#getSpaceFromCoordinates(x, y);
+        return getImage(space) === null;
+    }
+
+    displayWinner(winner) {
+        const winnerInfo = winner === "white" ? this.#whitePlayerInfo : this.#blackPlayerInfo;
+
+        this.#addClassToElement(winnerInfo, "winner");
+    }
+
+    displayActivePlayer(player) {
+        const playerInfo = player === "white" ? this.#whitePlayerInfo : this.#blackPlayerInfo;
+
+        this.#addClassToElement(playerInfo, "active");
+    }
+
+    hideActivePlayer(player) {
+        const playerInfo = player === "white" ? this.#whitePlayerInfo : this.#blackPlayerInfo;
+
+        this.#removeClassFromElement(playerInfo, "active");
+    }
 }
 
 export default View;
