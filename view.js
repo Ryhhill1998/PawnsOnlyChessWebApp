@@ -98,6 +98,12 @@ class View {
         return this.#getElement(row,".space-" + x);
     }
 
+    getCoordinatesFromSpace(space) {
+        const x = Number.parseInt(space.classList.value.at(-1));
+        const y = Number.parseInt(space.closest(".row").id.at(-1));
+        return [x, y];
+    }
+
     showPossibleMoves(possibleMoves) {
         possibleMoves.forEach(move => {
             const [x, y] = move.coordinates;
@@ -127,16 +133,20 @@ class View {
         removeSelectedOverlay(lastMove.endSpace);
     }
 
-    getPieceColour(image) {
-        if (!image) return;
+    getPiece(space) {
+        return space.querySelector("img");
+    }
 
-        const imageSrc = image.getAttribute("src");
+    getPieceColour(piece) {
+        if (!piece) return;
+
+        const imageSrc = piece.getAttribute("src");
 
         return imageSrc.includes("white") ? "white" : "black";
     }
 
-    getImage(space) {
-        return space.querySelector("img");
+    pieceHasMoved(piece) {
+        return piece.getAttribute("src").includes("moved");
     }
 
     spaceIsFree(x, y) {

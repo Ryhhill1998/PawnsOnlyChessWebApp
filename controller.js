@@ -8,52 +8,30 @@ class Controller {
         this.view = view;
     }
 
-    getPossibleMoves(colour, hasMoved, x, y) {
-        const movement = colour === "white" ? -1 : 1;
-        const possibleMoves = [];
+    filterPossibleMoves(space, possibleMoves) {
+        const piece = this.view.getPiece(space);
 
-        if (this.view.spaceIsFree(x, y + movement)) {
-            this.model.addMove(possibleMoves, x, y + movement, "standard");
+        if (!piece) return;
 
-            if (!hasMoved && this.view.spaceIsFree(x, y + 2 * movement)) {
-                this.model.addMove(possibleMoves, x, y + 2 * movement, "standard");
-            }
-        }
+        const colour = this.view.getPieceColour(piece);
 
-        addRightTakeMoves(possibleMoves, colour, movement, x, y);
-        addLeftTakeMoves(possibleMoves, colour, movement, x, y);
-
-        return possibleMoves;
-    }
-
-    addRightTakeMoves(possibleMoves, colour, movement, x, y) {
-        if (this.model.pieceIsAtEndRightSpace(colour, x)) return;
-
-        addTakeMoves(possibleMoves, "right", colour, movement, x, y);
-    }
-
-    addLeftTakeMoves(possibleMoves, colour, movement, x, y) {
-        if (this.model.pieceIsAtEndLeftSpace(colour, x)) return;
-
-        addTakeMoves(possibleMoves, "left", colour, movement, x, y);
-    }
-
-    addTakeMoves(possibleMoves, takeDirection, colour, movement, x, y) {
-        const colourToTake = colour === "white" ? "black" : "white";
-
-        const newX = takeDirection === "right" ? x - movement : x + movement;
-        const newY = y + movement;
-
-        if (takeIsPossible(colourToTake, newX, newY)) {
-            this.model.addMove(possibleMoves, newX, newY, "take");
-        }
+        return possibleMoves
+            .filter(move => {
+                const [type, coordinates] = move;
+                if (type === "standard") {
+                    return this.view.spaceIsFree(...coordinates);
+                } else {
+                    const colourToTake = colour === "white" ? "black" : "white";
+                    return this.takeIsPossible(colourToTake, ...coordinates);
+                }
+            });
     }
 
     takeIsPossible(colourToTake, x, y) {
         let isPossible = false;
 
         const space = this.view.getSpaceFromCoordinates(x, y);
-        const pieceImage = this.view.getImage(space);
+        const pieceImage = this.view.getPiece(space);
 
         if (pieceImage) {
             isPossible = this.view.getPieceColour(pieceImage) === colourToTake;
@@ -62,40 +40,31 @@ class Controller {
         return isPossible;
     }
 
-    movePiece(previousSpace, newSpace, piece) {
-        // check if space contains image (take move)
-        const newSpaceImage = newSpace.querySelector("img");
-        let moveIsTake, isFirstMove = false;
-
+    movePiece(previousSpace, newSpace, move, piece) {
         // check if move is a take move
-        if (newSpaceImage) {
-            // set last move as a take move
-            moveIsTake = true;
+        if (move.type === "take") {
 
             // piece is taken so remove taken piece from new square
-            newSpace.removeChild(newSpaceImage);
+            const pieceTaken = this.view.getPiece(newSpace);
+            newSpace.removeChild(pieceTaken);
 
-            if (turn === "white") {
-                const piecesTakenElement = whitePlayerInfo.querySelector(".pieces-taken .pieces");
-                piecesTaken.white++;
+            if (this.model.turn === "white") {
+                this.model.incrementWhitePiecesTaken();
+                const additionalPieces = this.model.getWhitePiecesTaken() - 4;
 
-                if (piecesTaken.white <= maxPiecesTaken) {
-                    piecesTakenElement.appendChild(newSpaceImage);
+                if (additionalPieces <= 0) {
+                    // use view to add piece taken to white pieces taken section
                 } else {
-                    const additionalPieces = piecesTaken.white - maxPiecesTaken;
-                    const additionalPiecesElement = whitePlayerInfo.querySelector(".additional-pieces");
-                    additionalPiecesElement.innerHTML = "+" + additionalPieces;
+                    // use view to update the additional pieces number for white
                 }
             } else {
-                const piecesTakenElement = blackPlayerInfo.querySelector(".pieces-taken .pieces");
-                piecesTaken.black++;
+                this.model.incrementBlackPiecesTaken();
+                const additionalPieces = this.model.getBlackPiecesTaken() - 4;
 
-                if (piecesTaken.black <= maxPiecesTaken) {
-                    piecesTakenElement.appendChild(newSpaceImage);
+                if (additionalPieces <= 0) {
+                    // use view to add piece taken to black pieces taken section
                 } else {
-                    const additionalPieces = piecesTaken.black - maxPiecesTaken;
-                    const additionalPiecesElement = blackPlayerInfo.querySelector(".additional-pieces");
-                    additionalPiecesElement.innerHTML = "+" + additionalPieces;
+                    // use view to update the additional pieces number for black
                 }
             }
         }
@@ -132,9 +101,9 @@ class Controller {
     }
 
     changeTurn() {
-        const previousTurn = turn;
-        turn = turn === "white" ? "black" : "white";
-        this.changeActivePlayer(previousTurn, turn);
+        const previousTurn = this.model.turn;
+        this.model.changeTurn();
+        this.changeActivePlayer(previousTurn, this.model.turn);
     }
 
     checkGameOver(moveSpace, pieceMoved) {
