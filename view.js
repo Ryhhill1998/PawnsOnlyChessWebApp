@@ -32,6 +32,10 @@ class View {
             : parentElement.querySelector(selector);
     }
 
+    getSpaceClicked(elementClicked) {
+        return elementClicked.closest(".space");
+    }
+
     #addClassToElement(element, className) {
         element.classList.add(className);
     }
@@ -170,6 +174,29 @@ class View {
         const playerInfo = player === "white" ? this.#whitePlayerInfo : this.#blackPlayerInfo;
 
         this.#removeClassFromElement(playerInfo, "active");
+    }
+
+    addPieceTaken(playerInfoColour, piece, additionalPieces) {
+        const playerInfoElement = playerInfoColour === "white" ? this.#whitePlayerInfo : this.#blackPlayerInfo;
+        const piecesTakenElement = this.#getElement(playerInfoElement, ".pieces-taken");
+
+        if (additionalPieces <= 0) {
+            const piecesElement = this.#getElement(piecesTakenElement, ".pieces");
+            piecesElement.appendChild(piece);
+        } else {
+            const additionalPiecesElement = this.#getElement(piecesTakenElement, ".additional-pieces");
+            additionalPiecesElement.innerHTML = "+" + additionalPieces;
+        }
+    }
+
+    movePiece(piece, spaceFrom, spaceTo) {
+        spaceFrom.removeChild(piece);
+        spaceTo.appendChild(piece);
+
+        if (!this.pieceHasMoved(piece)) {
+            const pieceImageSrc = piece.getAttribute("src").split(".")[0] + "-moved.svg";
+            piece.setAttribute("src", pieceImageSrc);
+        }
     }
 }
 

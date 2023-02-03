@@ -1,5 +1,7 @@
 class Model {
 
+    #spaceSelected;
+    #possibleMoves = [];
     #turn;
     #gameOver;
     #piecesTaken = {
@@ -7,23 +9,46 @@ class Model {
         black: 0
     }
 
+    #lastMove = {
+        startSpace: null,
+        endSpace: null,
+        firstMove: false,
+        take: false
+    };
+
+    #secondLastMove = {
+        startSpace: null,
+        endSpace: null
+    };
+
     constructor() {
     }
 
-    // moveIsValid(x, y) {
-    //     let isValid = false;
-    //
-    //     for (let i = 0; i < this.#possibleMoves.length; i++) {
-    //         const [xCoordinate, yCoordinate] = this.#possibleMoves[i].coordinates;
-    //
-    //         if (xCoordinate === x && yCoordinate === y) {
-    //             isValid = true;
-    //             break;
-    //         }
-    //     }
-    //
-    //     return isValid;
-    // }
+    get lastMove() {
+        return this.#lastMove;
+    }
+
+    get secondLastMove() {
+        return this.#secondLastMove;
+    }
+
+    set spaceSelected(space) {
+        this.#spaceSelected = space;
+    }
+
+    get spaceSelected() {
+        return this.#spaceSelected;
+    }
+
+    updateLastMove(startSpace, endSpace, firstMove, take) {
+        this.#secondLastMove.startSpace = lastMove.startSpace;
+        this.#secondLastMove.endSpace = lastMove.endSpace;
+
+        this.#lastMove.startSpace = startSpace;
+        this.#lastMove.endSpace = endSpace;
+        this.#lastMove.firstMove = firstMove;
+        this.#lastMove.take = take;
+    }
 
     getWhitePiecesTaken() {
         return this.#piecesTaken.white;
@@ -41,7 +66,7 @@ class Model {
         this.#piecesTaken.black++;
     }
 
-    getPossibleMoves(colour, hasMoved, x, y) {
+    generatePossibleMoves(colour, hasMoved, x, y) {
         const movement = colour === "white" ? -1 : 1;
         const possibleMoves = [];
 
@@ -55,6 +80,18 @@ class Model {
         this.#addLeftTakeMoves(possibleMoves, colour, movement, x, y);
 
         return possibleMoves;
+    }
+
+    set possibleMoves(possibleMoves) {
+        this.#possibleMoves = possibleMoves;
+    }
+
+    get possibleMoves() {
+        return this.#possibleMoves;
+    }
+
+    moveIsValid(x, y) {
+
     }
 
     #addRightTakeMoves(possibleMoves, colour, movement, x, y) {
@@ -99,6 +136,30 @@ class Model {
 
     changeTurn() {
         this.#turn = this.#turn === "white" ? "black" : "white";
+    }
+
+    whiteHasWon(y) {
+        const hasWon = y === 0;
+
+        if (hasWon) {
+            this.#gameOver = true;
+        }
+
+        return hasWon;
+    }
+
+    blackHasWon(y) {
+        const hasWon = y === 7;
+
+        if (hasWon) {
+            this.#gameOver = true;
+        }
+
+        return hasWon;
+    }
+
+    get gameIsOver() {
+        return this.#gameOver;
     }
 }
 
