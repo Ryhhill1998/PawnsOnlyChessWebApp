@@ -8,24 +8,15 @@ class Controller {
         this.view = view;
     }
 
-    #addMove(possibleMoves, x, y, type) {
-        const move = {
-            coordinates: [x, y],
-            type
-        };
-
-        possibleMoves.push(move);
-    }
-
     getPossibleMoves(colour, hasMoved, x, y) {
         const movement = colour === "white" ? -1 : 1;
         const possibleMoves = [];
 
-        if (spaceIsFree(x, y + movement)) {
-            this.#addMove(possibleMoves, x, y + movement, "standard");
+        if (this.view.spaceIsFree(x, y + movement)) {
+            this.model.addMove(possibleMoves, x, y + movement, "standard");
 
-            if (!hasMoved && spaceIsFree(x, y + 2 * movement)) {
-                this.#addMove(possibleMoves, x, y + 2 * movement, "standard");
+            if (!hasMoved && this.view.spaceIsFree(x, y + 2 * movement)) {
+                this.model.addMove(possibleMoves, x, y + 2 * movement, "standard");
             }
         }
 
@@ -36,13 +27,13 @@ class Controller {
     }
 
     addRightTakeMoves(possibleMoves, colour, movement, x, y) {
-        if (colour === "white" && x === 7 || colour === "black" && x === 0) return;
+        if (this.model.pieceIsAtEndRightSpace(colour, x)) return;
 
         addTakeMoves(possibleMoves, "right", colour, movement, x, y);
     }
 
     addLeftTakeMoves(possibleMoves, colour, movement, x, y) {
-        if (colour === "white" && x === 0 || colour === "black" && x === 7) return;
+        if (this.model.pieceIsAtEndLeftSpace(colour, x)) return;
 
         addTakeMoves(possibleMoves, "left", colour, movement, x, y);
     }
@@ -54,19 +45,18 @@ class Controller {
         const newY = y + movement;
 
         if (takeIsPossible(colourToTake, newX, newY)) {
-            updatePossibleMoves(possibleMoves, newX, newY, "take");
+            this.model.addMove(possibleMoves, newX, newY, "take");
         }
     }
 
     takeIsPossible(colourToTake, x, y) {
         let isPossible = false;
 
-        const row = document.getElementById("row-" + y);
-        const space = row.querySelector(".space-" + x);
-        const pieceImage = getImage(space);
+        const space = this.view.getSpaceFromCoordinates(x, y);
+        const pieceImage = this.view.getImage(space);
 
         if (pieceImage) {
-            isPossible = getPieceColour(pieceImage) === colourToTake;
+            isPossible = this.view.getPieceColour(pieceImage) === colourToTake;
         }
 
         return isPossible;

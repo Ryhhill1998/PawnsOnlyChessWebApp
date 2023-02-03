@@ -93,7 +93,7 @@ class View {
         removeValidTakeOverlay(space);
     }
 
-    #getSpaceFromCoordinates(x, y) {
+    getSpaceFromCoordinates(x, y) {
         const row = this.#getElement("#row-" + y);
         return this.#getElement(row,".space-" + x);
     }
@@ -101,7 +101,7 @@ class View {
     showPossibleMoves(possibleMoves) {
         possibleMoves.forEach(move => {
             const [x, y] = move.coordinates;
-            const space = this.#getSpaceFromCoordinates(x, y);
+            const space = this.getSpaceFromCoordinates(x, y);
 
             move.type === "take"
                 ? addValidTakeOverlay(space)
@@ -111,7 +111,7 @@ class View {
 
     hidePossibleMoves(possibleMoves) {
         possibleMoves.forEach(move => {
-            const space = this.#getSpaceFromMove(move);
+            const space = this.getSpaceFromCoordinates(move);
 
             removePossiblePositionsOverlay(space);
         });
@@ -140,7 +140,7 @@ class View {
     }
 
     spaceIsFree(x, y) {
-        const space = this.#getSpaceFromCoordinates(x, y);
+        const space = this.getSpaceFromCoordinates(x, y);
         return getImage(space) === null;
     }
 

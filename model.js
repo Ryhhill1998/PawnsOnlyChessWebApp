@@ -17,6 +17,23 @@ class Model {
 
         return isValid;
     }
+
+    addMove(possibleMoves, x, y, type) {
+        const move = {
+            coordinates: [x, y],
+            type
+        };
+
+        possibleMoves.push(move);
+    }
+
+    pieceIsAtEndRightSpace(colour, x) {
+        return colour === "white" && x === 7 || colour === "black" && x === 0;
+    }
+
+    pieceIsAtEndLeftSpace(colour, x) {
+        return colour === "white" && x === 0 || colour === "black" && x === 7;
+    }
 }
 
 export default Model;
