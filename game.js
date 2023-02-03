@@ -343,7 +343,7 @@ const changeTurn = () => {
 }
 
 // get the image element from a space
-const getImage = (space) => space.querySelector("img")
+const getImage = (space) => space.querySelector("img");
 
 // determine whether the piece selected has the right colour (determined by turn)
 const correctColourClicked = (imageSrc) => imageSrc?.includes(turn);
