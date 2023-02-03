@@ -1,34 +1,18 @@
-import Model from "./model";
-import View from "./view";
+import Model from "./model.js";
+import View from "./view.js";
 
 class Controller {
 
     constructor(model, view) {
         this.model = model;
         this.view = view;
+        this.init();
     }
 
-    deSelectPiece() {
-        const pieceColour = this.view.getPieceColour(piece);
-
-        if (this.model.turn !== pieceColour) return;
-
-        // this.deselectPiece();
-
-        this.model.spaceSelected = space;
-
-        // set possible moves
-        const pieceHasMoved = this.view.pieceHasMoved(piece);
-        const coordinates = this.view.getCoordinatesFromSpace(piece);
-
-        const possibleMoves = this.model.generatePossibleMoves(pieceColour, pieceHasMoved, ...coordinates);
-        this.model.possibleMoves = this.filterPossibleMoves(spaceSelected, possibleMoves);
-
-        // show piece selected in view
-        this.view.addPieceSelectedOverlay(spaceSelected);
-
-        // show possible moves in view
-        this.view.showPossibleMoves(pieceSelected);
+    deselectPiece() {
+        this.view.removeSelectedOverlay(this.model.spaceSelected);
+        this.view.hidePossibleMoves(this.model.possibleMoves);
+        this.model.spaceSelected = null;
     }
 
     selectPiece(space, piece) {
@@ -36,22 +20,22 @@ class Controller {
 
         if (this.model.turn !== pieceColour) return;
 
-        // this.deselectPiece();
+        this.deselectPiece();
 
         this.model.spaceSelected = space;
 
         // set possible moves
         const pieceHasMoved = this.view.pieceHasMoved(piece);
-        const coordinates = this.view.getCoordinatesFromSpace(piece);
+        const coordinates = this.view.getCoordinatesFromSpace(space);
 
         const possibleMoves = this.model.generatePossibleMoves(pieceColour, pieceHasMoved, ...coordinates);
-        this.model.possibleMoves = this.filterPossibleMoves(spaceSelected, possibleMoves);
+        this.model.possibleMoves = this.filterPossibleMoves(space, possibleMoves);
 
         // show piece selected in view
-        this.view.addPieceSelectedOverlay(spaceSelected);
+        this.view.addPieceSelectedOverlay(space);
 
         // show possible moves in view
-        this.view.showPossibleMoves(pieceSelected);
+        this.view.showPossibleMoves(this.model.possibleMoves);
     }
 
 
@@ -65,12 +49,11 @@ class Controller {
 
         return possibleMoves
             .filter(move => {
-                const [type, coordinates] = move;
-                if (type === "standard") {
-                    return this.view.spaceIsFree(...coordinates);
+                if (move.type === "standard") {
+                    return this.view.spaceIsFree(...move.coordinates);
                 } else {
                     const colourToTake = colour === "white" ? "black" : "white";
-                    return this.takeIsPossible(colourToTake, ...coordinates);
+                    return this.takeIsPossible(colourToTake, ...move.coordinates);
                 }
             });
     }
@@ -103,8 +86,8 @@ class Controller {
         this.view.addPieceTaken(turn, pieceTaken, additionalPieces);
     }
 
-    movePiece(previousSpace, newSpace, move, pieceBeingMoved) {
-        const moveIsTake = move.type === "take";
+    movePiece(previousSpace, newSpace, pieceBeingMoved) {
+        const moveIsTake = this.view.getPiece(newSpace) !== null;
 
         // check if move is a take move
         if (moveIsTake) {
@@ -128,7 +111,7 @@ class Controller {
         // hide second last move in view
         this.view.hidePreviousMove(this.model.secondLastMove);
 
-        undoJustUsed = false;
+        // undoJustUsed = false;
     }
 
     changeActivePlayer(previous, current) {
@@ -142,11 +125,11 @@ class Controller {
         this.changeActivePlayer(previousTurn, this.model.turn);
     }
 
-    checkGameOver(moveSpace, pieceMoved) {
+    checkGameOver(moveSpace) {
         const turn = this.model.turn;
 
         // get y value for piece that just moved
-        const y = Number.parseInt(moveSpace.closest(".row").id.at(-1));
+        const y = this.view.getCoordinatesFromSpace(moveSpace)[1];
 
         // check if colour that just moved has won
         const gameOver = turn === "white" ? this.model.whiteHasWon(y) : this.model.blackHasWon(y)
@@ -154,12 +137,12 @@ class Controller {
         if (gameOver) {
             this.view.displayWinner(turn);
         } else {
-            changeTurn();
+            this.changeTurn();
         }
     }
 
     spaceClicked({target}) {
-        if (this.model.gameIsOver) return;
+        if (this.model.gameOver) return;
 
         const space = this.view.getSpaceClicked(target);
         const piece = this.view.getPiece(space);
@@ -167,23 +150,28 @@ class Controller {
         const spaceSelected = this.model.spaceSelected;
         const pieceSelected = this.view.getPiece(spaceSelected);
 
-        if ((!piece || this.view.getPieceColour(pieceSelected) !== this.view.getPieceColour(piece)) && pieceSelected) {
-
+        if ((!piece || this.view.getPieceColour(pieceSelected) !== this.view.getPieceColour(piece))
+            && pieceSelected) {
             // check if move is valid
-            if (!this.model.moveIsValid(spaceSelected, space)) return;
+            const [x, y] = this.view.getCoordinatesFromSpace(space);
+            if (!this.model.moveIsValid(x, y)) return;
 
-            movePiece(spaceSelected, space, pieceSelected);
+            this.movePiece(spaceSelected, space, pieceSelected);
 
             // check if game is over
-            checkGameOver(space, pieceSelected);
+            this.checkGameOver(space, pieceSelected);
 
-            deselectPiece();
+            this.deselectPiece();
 
         } else if (space === spaceSelected) {
-            deselectPiece();
+            this.deselectPiece();
         } else {
-            selectPiece(space, piece);
+            this.selectPiece(space, piece);
         }
+    }
+
+    init() {
+        this.view.addSpaceClickedEventListener(this.spaceClicked.bind(this));
     }
 }
 

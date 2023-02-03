@@ -24,7 +24,7 @@ class View {
         this.#infoButton = this.#getElement("#info-button");
     }
 
-    #getElement(parentElement = document, selector) {
+    #getElement(selector, parentElement = document) {
         const identifier = selector[0];
 
         return identifier === "#"
@@ -67,7 +67,7 @@ class View {
     }
 
     #removeOverlay(space, selector) {
-        const overlay = this.#getElement(space, selector);
+        const overlay = this.#getElement(selector, space);
 
         if (!overlay) return;
 
@@ -93,13 +93,13 @@ class View {
     }
 
     removePossiblePositionsOverlay(space) {
-        removeValidMoveOverlay(space);
-        removeValidTakeOverlay(space);
+        this.removeValidMoveOverlay(space);
+        this.removeValidTakeOverlay(space);
     }
 
     getSpaceFromCoordinates(x, y) {
         const row = this.#getElement("#row-" + y);
-        return this.#getElement(row,".space-" + x);
+        return this.#getElement(".space-" + x, row);
     }
 
     getCoordinatesFromSpace(space) {
@@ -114,31 +114,34 @@ class View {
             const space = this.getSpaceFromCoordinates(x, y);
 
             move.type === "take"
-                ? addValidTakeOverlay(space)
-                : addValidMoveOverlay(space);
+                ? this.addValidTakeOverlay(space)
+                : this.addValidMoveOverlay(space);
         });
     }
 
     hidePossibleMoves(possibleMoves) {
         possibleMoves.forEach(move => {
-            const space = this.getSpaceFromCoordinates(move);
+            const [x, y] = move.coordinates;
+            const space = this.getSpaceFromCoordinates(x, y);
 
-            removePossiblePositionsOverlay(space);
+            this.removePossiblePositionsOverlay(space);
         });
     }
 
     showPreviousMove(lastMove) {
-        addPieceSelectedOverlay(lastMove.startSpace);
-        addPieceSelectedOverlay(lastMove.endSpace);
+        this.addPieceSelectedOverlay(lastMove.startSpace);
+        this.addPieceSelectedOverlay(lastMove.endSpace);
     }
 
     hidePreviousMove(lastMove) {
-        removeSelectedOverlay(lastMove.startSpace);
-        removeSelectedOverlay(lastMove.endSpace);
+        this.removeSelectedOverlay(lastMove.startSpace);
+        this.removeSelectedOverlay(lastMove.endSpace);
     }
 
     getPiece(space) {
-        return space.querySelector("img");
+        if (!space) return;
+
+        return this.#getElement("img", space);
     }
 
     getPieceColour(piece) {
@@ -155,7 +158,7 @@ class View {
 
     spaceIsFree(x, y) {
         const space = this.getSpaceFromCoordinates(x, y);
-        return getImage(space) === null;
+        return this.getPiece(space) === null;
     }
 
     displayWinner(winner) {
@@ -178,13 +181,13 @@ class View {
 
     addPieceTaken(playerInfoColour, piece, additionalPieces) {
         const playerInfoElement = playerInfoColour === "white" ? this.#whitePlayerInfo : this.#blackPlayerInfo;
-        const piecesTakenElement = this.#getElement(playerInfoElement, ".pieces-taken");
+        const piecesTakenElement = this.#getElement(".pieces-taken", playerInfoElement);
 
         if (additionalPieces <= 0) {
-            const piecesElement = this.#getElement(piecesTakenElement, ".pieces");
+            const piecesElement = this.#getElement(".pieces", piecesTakenElement);
             piecesElement.appendChild(piece);
         } else {
-            const additionalPiecesElement = this.#getElement(piecesTakenElement, ".additional-pieces");
+            const additionalPiecesElement = this.#getElement(".additional-pieces", piecesTakenElement);
             additionalPiecesElement.innerHTML = "+" + additionalPieces;
         }
     }
@@ -197,6 +200,10 @@ class View {
             const pieceImageSrc = piece.getAttribute("src").split(".")[0] + "-moved.svg";
             piece.setAttribute("src", pieceImageSrc);
         }
+    }
+
+    addSpaceClickedEventListener(handler) {
+        this.#board.addEventListener("click", handler);
     }
 }
 

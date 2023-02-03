@@ -1,9 +1,9 @@
 class Model {
 
-    #spaceSelected;
+    #spaceSelected = null;
     #possibleMoves = [];
-    #turn;
-    #gameOver;
+    #turn = "white";
+    #gameOver = false;
     #piecesTaken = {
         white: 0,
         black: 0
@@ -41,8 +41,8 @@ class Model {
     }
 
     updateLastMove(startSpace, endSpace, firstMove, take) {
-        this.#secondLastMove.startSpace = lastMove.startSpace;
-        this.#secondLastMove.endSpace = lastMove.endSpace;
+        this.#secondLastMove.startSpace = this.#lastMove.startSpace;
+        this.#secondLastMove.endSpace = this.#lastMove.endSpace;
 
         this.#lastMove.startSpace = startSpace;
         this.#lastMove.endSpace = endSpace;
@@ -91,7 +91,18 @@ class Model {
     }
 
     moveIsValid(x, y) {
+        let isValid = false;
 
+        for (let i = 0; i < this.#possibleMoves.length; i++) {
+            const coordinates = this.#possibleMoves[i].coordinates;
+
+            if (x === coordinates[0] && y === coordinates[1]) {
+                isValid = true;
+                break;
+            }
+        }
+
+        return isValid;
     }
 
     #addRightTakeMoves(possibleMoves, colour, movement, x, y) {
@@ -158,7 +169,7 @@ class Model {
         return hasWon;
     }
 
-    get gameIsOver() {
+    get gameOver() {
         return this.#gameOver;
     }
 }
