@@ -192,18 +192,44 @@ class View {
         }
     }
 
+    removePieceTaken(playerInfoColour, piece, additionalPieces) {
+        const playerInfoElement = playerInfoColour === "white" ? this.#whitePlayerInfo : this.#blackPlayerInfo;
+        const piecesTakenElement = this.#getElement(".pieces-taken", playerInfoElement);
+
+        if (additionalPieces <= 0) {
+            const piecesElement = this.#getElement(".pieces", piecesTakenElement);
+            piecesElement.appendChild(piece);
+        } else {
+            const additionalPiecesElement = this.#getElement(".additional-pieces", piecesTakenElement);
+            additionalPiecesElement.innerHTML = "+" + additionalPieces;
+        }
+    }
+
     movePiece(piece, spaceFrom, spaceTo) {
         spaceFrom.removeChild(piece);
         spaceTo.appendChild(piece);
 
         if (!this.pieceHasMoved(piece)) {
-            const pieceImageSrc = piece.getAttribute("src").split(".")[0] + "-moved.svg";
-            piece.setAttribute("src", pieceImageSrc);
+            this.makeFirstMove(piece);
         }
+    }
+
+    makeFirstMove(piece) {
+        const pieceImageSrc = piece.getAttribute("src").split(".")[0] + "-moved.svg";
+        piece.setAttribute("src", pieceImageSrc);
+    }
+
+    undoFirstMove(piece) {
+        const pieceImageSrc = piece.getAttribute("src").split("-")[0] + ".svg";
+        piece.setAttribute("src", pieceImageSrc);
     }
 
     addSpaceClickedEventListener(handler) {
         this.#board.addEventListener("click", handler);
+    }
+
+    addUndoClickedEventListener(handler) {
+        this.#undoButton.addEventListener("click", handler);
     }
 }
 

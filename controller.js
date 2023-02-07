@@ -110,8 +110,6 @@ class Controller {
 
         // hide second last move in view
         this.view.hidePreviousMove(this.model.secondLastMove);
-
-        // undoJustUsed = false;
     }
 
     changeActivePlayer(previous, current) {
@@ -170,8 +168,43 @@ class Controller {
         }
     }
 
+    undoClicked() {
+        if (this.model.undoJustUsed) return;
+
+        const {startSpace, endSpace, firstMove, take} = this.model.lastMove;
+        const lastPieceMoved = this.view.getPiece(endSpace);
+
+        // move piece in view from end space to start space
+        this.view.movePiece(lastPieceMoved, endSpace, startSpace);
+
+        // deselect the current last move in view
+        this.view.hidePreviousMove(this.model.lastMove);
+
+        // if move was first move, revert image src in view
+        if (firstMove) {
+            this.view.undoFirstMove(lastPieceMoved);
+        }
+
+        // undo last move in model
+        this.model.undoLastMove();
+
+        // select the new last move in view
+        this.view.showPreviousMove(this.model.lastMove);
+
+        // if move was take, remove piece taken and add to board at end space
+        if (take) {
+            if (this.model.turn === "white") {
+
+            }
+        }
+
+        // deselect current piece
+        this.deselectPiece();
+    }
+
     init() {
         this.view.addSpaceClickedEventListener(this.spaceClicked.bind(this));
+        this.view.addUndoClickedEventListener(this.undoClicked.bind(this));
     }
 }
 

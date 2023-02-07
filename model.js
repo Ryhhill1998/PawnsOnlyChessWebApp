@@ -1,27 +1,42 @@
 class Model {
 
-    #spaceSelected = null;
-    #possibleMoves = [];
-    #turn = "white";
-    #gameOver = false;
-    #piecesTaken = {
-        white: 0,
-        black: 0
-    }
-
-    #lastMove = {
-        startSpace: null,
-        endSpace: null,
-        firstMove: false,
-        take: false
-    };
-
-    #secondLastMove = {
-        startSpace: null,
-        endSpace: null
-    };
+    #spaceSelected;
+    #possibleMoves;
+    #turn;
+    #gameOver;
+    #piecesTaken;
+    #lastMove;
+    #secondLastMove;
+    #undoJustUsed;
 
     constructor() {
+        this.#spaceSelected = null;
+        this.#possibleMoves = [];
+        this.#turn = "white";
+        this.#gameOver = false;
+
+        this.#piecesTaken = {
+            white: 0,
+            black: 0
+        }
+
+        this.#lastMove = {
+            startSpace: null,
+            endSpace: null,
+            firstMove: false,
+            take: false
+        };
+
+        this.#initialiseSecondLastMove();
+
+        this.#undoJustUsed = false;
+    }
+
+    #initialiseSecondLastMove() {
+        this.#secondLastMove = {
+            startSpace: null,
+            endSpace: null
+        };
     }
 
     get lastMove() {
@@ -32,14 +47,6 @@ class Model {
         return this.#secondLastMove;
     }
 
-    set spaceSelected(space) {
-        this.#spaceSelected = space;
-    }
-
-    get spaceSelected() {
-        return this.#spaceSelected;
-    }
-
     updateLastMove(startSpace, endSpace, firstMove, take) {
         this.#secondLastMove.startSpace = this.#lastMove.startSpace;
         this.#secondLastMove.endSpace = this.#lastMove.endSpace;
@@ -48,6 +55,33 @@ class Model {
         this.#lastMove.endSpace = endSpace;
         this.#lastMove.firstMove = firstMove;
         this.#lastMove.take = take;
+
+        this.#undoJustUsed = false;
+    }
+
+    undoLastMove() {
+        const {startSpace, endSpace} = this.#secondLastMove;
+
+        this.#lastMove = {
+            startSpace: startSpace,
+            endSpace: endSpace,
+        };
+
+        this.#initialiseSecondLastMove();
+        this.changeTurn();
+        this.#undoJustUsed = true;
+    }
+
+    get undoJustUsed() {
+        return this.#undoJustUsed;
+    }
+
+    set spaceSelected(space) {
+        this.#spaceSelected = space;
+    }
+
+    get spaceSelected() {
+        return this.#spaceSelected;
     }
 
     getWhitePiecesTaken() {
