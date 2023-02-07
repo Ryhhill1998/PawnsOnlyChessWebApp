@@ -25,6 +25,10 @@ h1 {
     font-size: 1.5rem;
 }
 
+main {
+    position: relative;
+}
+
 .game-container {
     width: fit-content;
     margin: 0 auto;
@@ -153,4 +157,82 @@ button i {
     z-index: 10;
     width: 100%;
     height: 100%;
+}
+
+/* INSTRUCTIONS */
+.instructions {
+    position: absolute;
+    background-color: #222222;
+    color: lightgrey;
+    width: 400px;
+    height: 620px;
+    left: 0;
+    right: 0;
+    top: -5%;
+    z-index: 30;
+    border-radius: 8px;
+    margin: 2em auto 0;
+    padding: 1.5em 2em;
+    text-align: center;
+}
+
+.instructions > div:first-child {
+    position: relative;
+}
+
+.instructions h2 {
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+.instructions > div > p {
+    font-size: 0.9rem;
+    margin-bottom: 1em;
+}
+
+.instructions .images-container {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+    margin-bottom: 1em;
+}
+
+.instructions figure {
+    width: 80px;
+    align-self: flex-start;
+}
+
+.instructions figure > img {
+    width: 100%;
+}
+
+hr {
+    color: lightgrey;
+    margin-bottom: 1em;
+}
+
+.close-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: none;
+    border: none;
+    color: lightgrey;
+    font-size: 2rem;
+    padding: 0;
+    line-height: 1.8rem;
+}
+
+.close-button:hover {
+    color: #5fc3e5;
+}
+
+.overlay {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    background-color: rgba(141, 141, 141, 0.9);
+    z-index: 20;
+    /*display: none;*/
 }
