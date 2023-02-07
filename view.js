@@ -192,16 +192,19 @@ class View {
         }
     }
 
-    removePieceTaken(playerInfoColour, piece, additionalPieces) {
+    replacePieceTaken(playerInfoColour, additionalPieces, spaceTakenFrom) {
         const playerInfoElement = playerInfoColour === "white" ? this.#whitePlayerInfo : this.#blackPlayerInfo;
         const piecesTakenElement = this.#getElement(".pieces-taken", playerInfoElement);
 
-        if (additionalPieces <= 0) {
-            const piecesElement = this.#getElement(".pieces", piecesTakenElement);
-            piecesElement.appendChild(piece);
-        } else {
+        const lastPieceTaken = piecesTakenElement.querySelector(".pieces img:last-child");
+        spaceTakenFrom.appendChild(lastPieceTaken);
+
+        if (additionalPieces >= 0) {
             const additionalPiecesElement = this.#getElement(".additional-pieces", piecesTakenElement);
-            additionalPiecesElement.innerHTML = "+" + additionalPieces;
+            additionalPiecesElement.innerHTML = additionalPieces === 0 ? "" : "+" + additionalPieces;
+            const pieceCopy = lastPieceTaken.cloneNode();
+            const piecesElement = this.#getElement(".pieces", piecesTakenElement);
+            piecesElement.appendChild(pieceCopy);
         }
     }
 

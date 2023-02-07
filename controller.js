@@ -71,7 +71,7 @@ class Controller {
         return isPossible;
     }
 
-    updatePiecesTaken(pieceTaken) {
+    updatePiecesTakenMove(pieceTaken) {
         const turn = this.model.turn;
         let additionalPieces;
 
@@ -86,6 +86,21 @@ class Controller {
         this.view.addPieceTaken(turn, pieceTaken, additionalPieces);
     }
 
+    updatePiecesTakenUndo(space) {
+        const turn = this.model.turn;
+        let additionalPieces;
+
+        if (turn === "white") {
+            this.model.decrementWhitePiecesTaken();
+            additionalPieces = this.model.getWhitePiecesTaken() - 4;
+        } else {
+            this.model.decrementBlackPiecesTaken();
+            additionalPieces = this.model.getBlackPiecesTaken() - 4;
+        }
+
+        this.view.replacePieceTaken(turn, additionalPieces, space);
+    }
+
     movePiece(previousSpace, newSpace, pieceBeingMoved) {
         const moveIsTake = this.view.getPiece(newSpace) !== null;
 
@@ -96,7 +111,7 @@ class Controller {
             const pieceTaken = this.view.getPiece(newSpace);
             newSpace.removeChild(pieceTaken);
 
-            this.updatePiecesTaken(pieceTaken);
+            this.updatePiecesTakenMove(pieceTaken);
         }
 
         // remove image element from space piece is being moved from
@@ -169,7 +184,7 @@ class Controller {
     }
 
     undoClicked() {
-        if (this.model.undoJustUsed) return;
+        if (this.model.undoJustUsed || this.model.gameOver) return;
 
         const {startSpace, endSpace, firstMove, take} = this.model.lastMove;
         const lastPieceMoved = this.view.getPiece(endSpace);
@@ -193,9 +208,7 @@ class Controller {
 
         // if move was take, remove piece taken and add to board at end space
         if (take) {
-            if (this.model.turn === "white") {
-
-            }
+            this.updatePiecesTakenUndo(endSpace);
         }
 
         // deselect current piece

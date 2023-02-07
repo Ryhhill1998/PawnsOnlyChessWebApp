@@ -100,6 +100,14 @@ class Model {
         this.#piecesTaken.black++;
     }
 
+    decrementWhitePiecesTaken() {
+        this.#piecesTaken.white--;
+    }
+
+    decrementBlackPiecesTaken() {
+        this.#piecesTaken.black--;
+    }
+
     generatePossibleMoves(colour, hasMoved, x, y) {
         const movement = colour === "white" ? -1 : 1;
         const possibleMoves = [];
