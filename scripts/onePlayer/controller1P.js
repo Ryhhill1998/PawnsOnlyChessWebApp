@@ -162,6 +162,8 @@ class Controller1P {
     }
 
     moveComputer() {
+        if (this.model.gameOver) return;
+
         const colour = this.model.turn;
 
         let move = this.generateComputerMove(colour);

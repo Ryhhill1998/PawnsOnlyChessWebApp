@@ -206,6 +206,7 @@ class View {
     addPieceTaken(playerInfoColour, piece, additionalPieces) {
         const playerInfoElement = playerInfoColour === "white" ? this.#whitePlayerInfo : this.#blackPlayerInfo;
         const piecesTakenElement = this.#getElement(".pieces-taken", playerInfoElement);
+        const piecesArray = playerInfoColour === "white" ? this.#blackPieces : this.#whitePieces;
 
         if (additionalPieces <= 0) {
             const piecesElement = this.#getElement(".pieces", piecesTakenElement);
@@ -214,11 +215,16 @@ class View {
             const additionalPiecesElement = this.#getElement(".additional-pieces", piecesTakenElement);
             additionalPiecesElement.innerHTML = "+" + additionalPieces;
         }
+
+        const updatedPieces = piecesArray.filter(p => p !== piece);
+
+        playerInfoColour === "white" ? this.#blackPieces = updatedPieces : this.#whitePieces = updatedPieces;
     }
 
     replacePieceTaken(playerInfoColour, additionalPieces, spaceTakenFrom) {
         const playerInfoElement = playerInfoColour === "white" ? this.#whitePlayerInfo : this.#blackPlayerInfo;
         const piecesTakenElement = this.#getElement(".pieces-taken", playerInfoElement);
+        const piecesArray = playerInfoColour === "white" ? this.#blackPieces : this.#whitePieces;
 
         const lastPieceTaken = piecesTakenElement.querySelector(".pieces img:last-child");
         spaceTakenFrom.appendChild(lastPieceTaken);
@@ -230,6 +236,8 @@ class View {
             const piecesElement = this.#getElement(".pieces", piecesTakenElement);
             piecesElement.appendChild(pieceCopy);
         }
+
+        piecesArray.push(lastPieceTaken);
     }
 
     movePiece(piece, spaceFrom, spaceTo) {
