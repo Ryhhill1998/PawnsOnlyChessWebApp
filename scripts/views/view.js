@@ -259,6 +259,10 @@ class View {
         piece.setAttribute("src", pieceImageSrc);
     }
 
+    getPiecesArray(colour) {
+        return colour === "white" ? this.#whitePieces : this.#blackPieces;
+    }
+
     showInstructions() {
         this.#instructions.classList.remove("no-display");
     }

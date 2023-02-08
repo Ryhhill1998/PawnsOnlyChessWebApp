@@ -161,24 +161,59 @@ class Controller1P {
         }
     }
 
-    moveComputer() {
+    moveComputerEasy() {
         if (this.model.gameOver) return;
 
         const colour = this.model.turn;
 
-        let move = this.generateComputerMove(colour);
+        let move = null;
 
         while (!move) {
-            move = this.generateComputerMove(colour);
+            move = this.generateRandomComputerMove(colour);
         }
 
         const {pieceToMove, startSpace, endSpace} = move;
 
         this.movePiece(startSpace, endSpace, pieceToMove);
+
         this.changeTurn();
     }
 
-    generateComputerMove(colour) {
+    moveComputerMedium() {
+        if (this.model.gameOver) return;
+
+        const colour = this.model.turn;
+
+        const pieces = this.view.getPiecesArray(colour);
+        let takeMove = null;
+
+        for (let i = 0; i < pieces.length; i++) {
+            const piece = pieces[i];
+            const hasMoved = this.view.pieceHasMoved(piece);
+            const space = piece.closest(".space");
+            const [x, y] = this.view.getCoordinatesFromSpace(space);
+            const possibleMoves = this.model.generatePossibleMoves(colour, hasMoved, x, y);
+            const filteredMoves = this.filterPossibleMoves(space, possibleMoves);
+
+            for (let j = 0; j < filteredMoves.length; j++) {
+                const possibleMove = filteredMoves[j];
+                if (possibleMove.type === "take") {
+                    takeMove = this.formatMove(piece, space, possibleMove);
+                    break;
+                }
+            }
+        }
+
+        if (takeMove) {
+            const {pieceToMove, startSpace, endSpace} = takeMove;
+            this.movePiece(startSpace, endSpace, pieceToMove);
+            this.changeTurn();
+        } else {
+            this.moveComputerEasy();
+        }
+    }
+
+    generateRandomComputerMove(colour) {
         const pieceToMove = this.view.getRandomPiece(colour);
         const hasMoved = this.view.pieceHasMoved(pieceToMove);
         const space = pieceToMove.closest(".space");
@@ -189,12 +224,16 @@ class Controller1P {
 
         if (!chosenMove) return null;
 
-        const chosenMoveSpace = this.view.getSpaceFromCoordinates(...chosenMove.coordinates);
+        return this.formatMove(pieceToMove, space, chosenMove);
+    }
+
+    formatMove(pieceToMove, startSpace, move) {
+        const endSpace = this.view.getSpaceFromCoordinates(...move.coordinates);
 
         return {
             pieceToMove,
-            startSpace: space,
-            endSpace: chosenMoveSpace
+            startSpace,
+            endSpace
         }
     }
 
@@ -220,7 +259,7 @@ class Controller1P {
 
             this.deselectPiece();
 
-            this.moveComputer();
+            this.moveComputerMedium();
 
         } else if (space === spaceSelected) {
             this.deselectPiece();
