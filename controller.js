@@ -184,7 +184,7 @@ class Controller {
     }
 
     undoClicked() {
-        if (this.model.undoJustUsed || this.model.gameOver) return;
+        if (this.model.undoJustUsed || this.model.gameOver || !this.model.lastMove.startSpace) return;
 
         const {startSpace, endSpace, firstMove, take} = this.model.lastMove;
         const lastPieceMoved = this.view.getPiece(endSpace);
@@ -215,9 +215,30 @@ class Controller {
         this.deselectPiece();
     }
 
+    infoClicked() {
+        this.view.showInstructions();
+        this.view.showOverlay();
+    }
+
+    #hideInstructionsAndOverlay() {
+        this.view.hideInstructions();
+        this.view.hideOverlay();
+    }
+
+    overlayClicked() {
+        this.#hideInstructionsAndOverlay();
+    }
+
+    closeInstructionsButtonClicked() {
+        this.#hideInstructionsAndOverlay();
+    }
+
     init() {
         this.view.addSpaceClickedEventListener(this.spaceClicked.bind(this));
         this.view.addUndoClickedEventListener(this.undoClicked.bind(this));
+        this.view.addInfoClickedEventListener(this.infoClicked.bind(this));
+        this.view.addOverlayClickedEventListener(this.overlayClicked.bind(this));
+        this.view.addCloseInstructionsButtonClickedEventListener(this.closeInstructionsButtonClicked.bind(this));
     }
 }
 

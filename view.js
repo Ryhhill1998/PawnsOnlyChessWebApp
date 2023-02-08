@@ -10,6 +10,9 @@ class View {
     #whitePlayerInfo;
     #undoButton;
     #infoButton;
+    #instructions;
+    #closeInstructionsButton;
+    #overlay;
 
     constructor() {
         // board
@@ -22,6 +25,11 @@ class View {
         // buttons in header
         this.#undoButton = this.#getElement("#undo-button");
         this.#infoButton = this.#getElement("#info-button");
+
+        // instructions and overlay
+        this.#instructions = this.#getElement("#instructions");
+        this.#closeInstructionsButton = this.#getElement("#close-instructions-button");
+        this.#overlay = this.#getElement("#overlay");
     }
 
     #getElement(selector, parentElement = document) {
@@ -227,12 +235,40 @@ class View {
         piece.setAttribute("src", pieceImageSrc);
     }
 
+    showInstructions() {
+        this.#instructions.classList.remove("no-display");
+    }
+
+    showOverlay() {
+        this.#overlay.classList.remove('no-display');
+    }
+
+    hideInstructions() {
+        this.#instructions.classList.add("no-display");
+    }
+
+    hideOverlay() {
+        this.#overlay.classList.add('no-display');
+    }
+
     addSpaceClickedEventListener(handler) {
         this.#board.addEventListener("click", handler);
     }
 
     addUndoClickedEventListener(handler) {
         this.#undoButton.addEventListener("click", handler);
+    }
+
+    addInfoClickedEventListener(handler) {
+        this.#infoButton.addEventListener("click", handler);
+    }
+
+    addOverlayClickedEventListener(handler) {
+        this.#overlay.addEventListener("click", handler);
+    }
+
+    addCloseInstructionsButtonClickedEventListener(handler) {
+        this.#closeInstructionsButton.addEventListener("click", handler);
     }
 }
 
