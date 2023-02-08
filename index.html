@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
           integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
 
-    <script type="module" src="controller.js" defer></script>
+    <script type="module" src="scripts/twoPlayer/controller2P.js" defer></script>
 </head>
 <body>
 
@@ -87,25 +87,25 @@
 
         <div id="board" class="board">
             <div id="row-0" class="row">
-                <div class="space space-white space-0"><img src="pieces/black/pawn.svg" alt=""></div>
-                <div class="space space-blue space-1"><img src="pieces/black/pawn.svg" alt=""></div>
-                <div class="space space-white space-2"><img src="pieces/black/pawn.svg" alt=""></div>
-                <div class="space space-blue space-3"><img src="pieces/black/pawn.svg" alt=""></div>
-                <div class="space space-white space-4"><img src="pieces/black/pawn.svg" alt=""></div>
-                <div class="space space-blue space-5"><img src="pieces/black/pawn.svg" alt=""></div>
-                <div class="space space-white space-6"><img src="pieces/black/pawn.svg" alt=""></div>
-                <div class="space space-blue space-7"><img src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-white space-0"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-blue space-1"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-white space-2"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-blue space-3"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-white space-4"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-blue space-5"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-white space-6"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-blue space-7"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
             </div>
 
             <div id="row-1" class="row">
-                <div class="space space-blue space-0"><img src="pieces/black/pawn.svg" alt=""></div>
-                <div class="space space-white space-1"><img src="pieces/black/pawn.svg" alt=""></div>
-                <div class="space space-blue space-2"><img src="pieces/black/pawn.svg" alt=""></div>
-                <div class="space space-white space-3"><img src="pieces/black/pawn.svg" alt=""></div>
-                <div class="space space-blue space-4"><img src="pieces/black/pawn.svg" alt=""></div>
-                <div class="space space-white space-5"><img src="pieces/black/pawn.svg" alt=""></div>
-                <div class="space space-blue space-6"><img src="pieces/black/pawn.svg" alt=""></div>
-                <div class="space space-white space-7"><img src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-blue space-0"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-white space-1"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-blue space-2"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-white space-3"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-blue space-4"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-white space-5"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-blue space-6"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
+                <div class="space space-white space-7"><img class="black-piece" src="pieces/black/pawn.svg" alt=""></div>
             </div>
 
             <div id="row-2" class="row">
@@ -153,25 +153,25 @@
             </div>
 
             <div id="row-6" class="row">
-                <div class="space space-white space-0"><img src="pieces/white/pawn.svg" alt=""></div>
-                <div class="space space-blue space-1"><img src="pieces/white/pawn.svg" alt=""></div>
-                <div class="space space-white space-2"><img src="pieces/white/pawn.svg" alt=""></div>
-                <div class="space space-blue space-3"><img src="pieces/white/pawn.svg" alt=""></div>
-                <div class="space space-white space-4"><img src="pieces/white/pawn.svg" alt=""></div>
-                <div class="space space-blue space-5"><img src="pieces/white/pawn.svg" alt=""></div>
-                <div class="space space-white space-6"><img src="pieces/white/pawn.svg" alt=""></div>
-                <div class="space space-blue space-7"><img src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-white space-0"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-blue space-1"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-white space-2"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-blue space-3"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-white space-4"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-blue space-5"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-white space-6"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-blue space-7"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
             </div>
 
             <div id="row-7" class="row">
-                <div class="space space-blue space-0"><img src="pieces/white/pawn.svg" alt=""></div>
-                <div class="space space-white space-1"><img src="pieces/white/pawn.svg" alt=""></div>
-                <div class="space space-blue space-2"><img src="pieces/white/pawn.svg" alt=""></div>
-                <div class="space space-white space-3"><img src="pieces/white/pawn.svg" alt=""></div>
-                <div class="space space-blue space-4"><img src="pieces/white/pawn.svg" alt=""></div>
-                <div class="space space-white space-5"><img src="pieces/white/pawn.svg" alt=""></div>
-                <div class="space space-blue space-6"><img src="pieces/white/pawn.svg" alt=""></div>
-                <div class="space space-white space-7"><img src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-blue space-0"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-white space-1"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-blue space-2"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-white space-3"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-blue space-4"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-white space-5"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-blue space-6"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
+                <div class="space space-white space-7"><img class="white-piece" src="pieces/white/pawn.svg" alt=""></div>
             </div>
         </div>
 

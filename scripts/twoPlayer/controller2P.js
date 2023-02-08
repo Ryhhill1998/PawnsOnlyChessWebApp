@@ -1,7 +1,7 @@
-import Model from "./model.js";
-import View from "./view.js";
+import Model from "../model.js";
+import View from "../views/view.js";
 
-class Controller {
+class Controller2P {
 
     constructor(model, view) {
         this.model = model;
@@ -242,4 +242,4 @@ class Controller {
     }
 }
 
-const app = new Controller(new Model(), new View());
+const app = new Controller2P(new Model(), new View());
