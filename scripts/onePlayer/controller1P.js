@@ -6,6 +6,7 @@ class Controller1P {
     constructor(model, view) {
         this.model = model;
         this.view = view;
+        this.playerColour = "white";
         this.init();
     }
 
@@ -46,11 +47,17 @@ class Controller1P {
         if (!piece) return;
 
         const colour = this.view.getPieceColour(piece);
+        let standardMovesAvailable = true;
 
         return possibleMoves
             .filter(move => {
                 if (move.type === "standard") {
-                    return this.view.spaceIsFree(...move.coordinates);
+                    const spaceIsFree = this.view.spaceIsFree(...move.coordinates);
+                    if (!spaceIsFree) {
+                        standardMovesAvailable = false;
+                    }
+
+                    return spaceIsFree && standardMovesAvailable;
                 } else {
                     const colourToTake = colour === "white" ? "black" : "white";
                     return this.takeIsPossible(colourToTake, ...move.coordinates);
@@ -154,6 +161,41 @@ class Controller1P {
         }
     }
 
+    moveComputer() {
+        const colour = this.model.turn;
+
+        let move = this.generateComputerMove(colour);
+
+        while (!move) {
+            move = this.generateComputerMove(colour);
+        }
+
+        const {pieceToMove, startSpace, endSpace} = move;
+
+        this.movePiece(startSpace, endSpace, pieceToMove);
+        this.changeTurn();
+    }
+
+    generateComputerMove(colour) {
+        const pieceToMove = this.view.getRandomPiece(colour);
+        const hasMoved = this.view.pieceHasMoved(pieceToMove);
+        const space = pieceToMove.closest(".space");
+        const [x, y] = this.view.getCoordinatesFromSpace(space);
+        const possibleMoves = this.model.generatePossibleMoves(colour, hasMoved, x, y);
+        this.model.possibleMoves = this.filterPossibleMoves(space, possibleMoves);
+        const chosenMove = this.model.getComputerMove();
+
+        if (!chosenMove) return null;
+
+        const chosenMoveSpace = this.view.getSpaceFromCoordinates(...chosenMove.coordinates);
+
+        return {
+            pieceToMove,
+            startSpace: space,
+            endSpace: chosenMoveSpace
+        }
+    }
+
     spaceClicked({target}) {
         if (this.model.gameOver) return;
 
@@ -175,6 +217,8 @@ class Controller1P {
             this.checkGameOver(space, pieceSelected);
 
             this.deselectPiece();
+
+            this.moveComputer();
 
         } else if (space === spaceSelected) {
             this.deselectPiece();

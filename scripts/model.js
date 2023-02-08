@@ -183,6 +183,11 @@ class Model {
         return colour === "white" && x === 0 || colour === "black" && x === 7;
     }
 
+    getComputerMove() {
+        const randomIndex = Math.floor(Math.random() * this.possibleMoves.length);
+        return this.possibleMoves[randomIndex];
+    }
+
     get turn() {
         return this.#turn;
     }

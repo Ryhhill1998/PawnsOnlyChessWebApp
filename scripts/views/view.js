@@ -13,6 +13,8 @@ class View {
     #instructions;
     #closeInstructionsButton;
     #overlay;
+    #whitePieces;
+    #blackPieces;
 
     constructor() {
         // board
@@ -30,6 +32,10 @@ class View {
         this.#instructions = this.#getElement("#instructions");
         this.#closeInstructionsButton = this.#getElement("#close-instructions-button");
         this.#overlay = this.#getElement("#overlay");
+
+        // white and black pieces arrays
+        this.#whitePieces = [...this.#getAllElements(".white-piece")];
+        this.#blackPieces = [...this.#getAllElements(".black-piece")];
     }
 
     #getElement(selector, parentElement = document) {
@@ -38,6 +44,16 @@ class View {
         return identifier === "#"
             ? parentElement.getElementById(selector.slice(1))
             : parentElement.querySelector(selector);
+    }
+
+    #getAllElements(selector) {
+        return document.querySelectorAll(selector);
+    }
+
+    getRandomPiece(colour) {
+        const piecesArray = colour === "white" ? this.#whitePieces : this.#blackPieces;
+        const randomIndex = Math.floor(Math.random() * piecesArray.length);
+        return piecesArray[randomIndex];
     }
 
     getSpaceClicked(elementClicked) {
