@@ -132,6 +132,10 @@ class View {
         return [x, y];
     }
 
+    getSpaceFromPiece(piece) {
+        return piece.closest(".space");
+    }
+
     showPossibleMoves(possibleMoves) {
         possibleMoves.forEach(move => {
             const [x, y] = move.coordinates;

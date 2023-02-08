@@ -190,7 +190,7 @@ class Controller1P {
         for (let i = 0; i < pieces.length; i++) {
             const piece = pieces[i];
             const hasMoved = this.view.pieceHasMoved(piece);
-            const space = piece.closest(".space");
+            const space = this.view.getSpaceFromPiece(piece);
             const [x, y] = this.view.getCoordinatesFromSpace(space);
             const possibleMoves = this.model.generatePossibleMoves(colour, hasMoved, x, y);
             const filteredMoves = this.filterPossibleMoves(space, possibleMoves);
@@ -216,7 +216,7 @@ class Controller1P {
     generateRandomComputerMove(colour) {
         const pieceToMove = this.view.getRandomPiece(colour);
         const hasMoved = this.view.pieceHasMoved(pieceToMove);
-        const space = pieceToMove.closest(".space");
+        const space = this.view.getSpaceFromPiece(pieceToMove);
         const [x, y] = this.view.getCoordinatesFromSpace(space);
         const possibleMoves = this.model.generatePossibleMoves(colour, hasMoved, x, y);
         this.model.possibleMoves = this.filterPossibleMoves(space, possibleMoves);
