@@ -1,8 +1,6 @@
 import Controller from "./controller.js";
-import Model from "../model.js";
-import View from "../views/view.js";
 
-class Controller1P extends Controller {
+export default class Controller1P extends Controller {
 
     constructor(model, view) {
         super(model, view, "1P");
@@ -93,5 +91,3 @@ class Controller1P extends Controller {
         }
     }
 }
-
-const app = new Controller1P(new Model(), new View());

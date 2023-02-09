@@ -159,12 +159,11 @@ button i {
     height: 100%;
 }
 
-/* INSTRUCTIONS */
-.instructions {
+/* GENERAL POPUP */
+.pop-up {
     position: absolute;
     background-color: #222222;
     color: lightgrey;
-    width: 400px;
     left: 0;
     right: 0;
     z-index: 30;
@@ -172,6 +171,11 @@ button i {
     margin: 0 auto;
     padding: 1.5em 2em;
     text-align: center;
+}
+
+/* INSTRUCTIONS */
+.instructions {
+    width: 400px;
 }
 
 .instructions > div:first-child {
@@ -225,6 +229,7 @@ hr {
     color: #5fc3e5;
 }
 
+/* OVERLAY */
 .overlay {
     position: fixed;
     height: 100%;
@@ -236,4 +241,50 @@ hr {
 
 .no-display {
     display: none;
+}
+
+/* GAME MODE POPUP */
+.game-mode-pop-up {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5em;
+}
+
+.game-mode-pop-up .welcome {
+    margin-top: 2em;
+}
+
+.game-mode-pop-up .welcome h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5em;
+}
+
+.game-mode-pop-up .welcome h1 {
+    font-size: 2.5rem;
+}
+
+.game-mode-pop-up button {
+    width: 200px;
+    padding: 1.75em 0.5em;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    font-family: 'Roboto', sans-serif;
+    letter-spacing: 0.075em;
+}
+
+.game-mode-pop-up .single-player {
+    color: white;
+    background-color: #3A8891;
+}
+
+.game-mode-pop-up .single-player i {
+    color: white;
+}
+
+.game-mode-pop-up .two-player {
+    color: #3A8891;
+    background-color: white;
 }

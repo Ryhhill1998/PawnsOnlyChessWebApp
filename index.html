@@ -15,14 +15,23 @@
 </head>
 <body>
 
+<div id="game-mode-pop-up" class="pop-up game-mode-pop-up">
+    <div class="welcome">
+        <h2>Welcome to</h2>
+        <h1>Pawns Only Chess</h1>
+    </div>
+    <button id="single-player" class="single-player">Single Player <i class="fas fa-user"></i></button>
+    <button id="two-player" class="two-player">Two Player <i class="fas fa-user-friends"></i></button>
+</div>
+
 <header>
     <button id="undo-button"><i class="fas fa-undo-alt fa-2x"></i></button>
-    <h1>Pawns Only Chess</h1>
+    <h2>Pawns Only Chess</h2>
     <button id="info-button"><i class="fas fa-info-circle fa-2x"></i></button>
 </header>
 
 <main>
-    <div id="instructions" class="instructions no-display">
+    <div id="instructions" class="pop-up instructions no-display">
         <div>
             <h2>How to Play</h2>
             <button id="close-instructions-button" class="close-button">&#215</button>
