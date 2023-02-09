@@ -4,7 +4,6 @@ export default class Controller {
         this.model = model;
         this.view = view;
         this.type = type;
-        this.init();
     }
 
     deselectPiece() {
@@ -198,13 +197,5 @@ export default class Controller {
 
     closeInstructionsButtonClicked() {
         this.#hideInstructionsAndOverlay();
-    }
-
-    init() {
-        this.view.addSpaceClickedEventListener(this.spaceClicked.bind(this));
-        this.view.addUndoClickedEventListener(this.undoClicked.bind(this));
-        this.view.addInfoClickedEventListener(this.infoClicked.bind(this));
-        this.view.addOverlayClickedEventListener(this.overlayClicked.bind(this));
-        this.view.addCloseInstructionsButtonClickedEventListener(this.closeInstructionsButtonClicked.bind(this));
     }
 }

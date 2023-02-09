@@ -1,4 +1,4 @@
-import Controller from "./controller";
+import Controller from "./controller.js";
 import Model from "../model.js";
 import View from "../views/view.js";
 
@@ -118,6 +118,10 @@ class Controller1P extends Controller {
 
     init() {
         this.view.addSpaceClickedEventListener(this.spaceClicked.bind(this));
+        this.view.addUndoClickedEventListener(this.undoClicked.bind(this));
+        this.view.addInfoClickedEventListener(this.infoClicked.bind(this));
+        this.view.addOverlayClickedEventListener(this.overlayClicked.bind(this));
+        this.view.addCloseInstructionsButtonClickedEventListener(this.closeInstructionsButtonClicked.bind(this));
     }
 }
 
