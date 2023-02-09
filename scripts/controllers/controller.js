@@ -175,7 +175,7 @@ export default class Controller {
             this.movePiece(spaceSelected, space, pieceSelected);
 
             // check if game is over
-            this.checkGameOver(space, pieceSelected);
+            this.checkGameOver(space);
 
             this.deselectPiece();
 

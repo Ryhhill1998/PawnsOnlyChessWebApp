@@ -22,6 +22,8 @@ export default class Controller1P extends Controller {
 
         let move = null;
 
+        // TODO - CHECK IF MOVE IS POSSIBLE - include this in checkGameOver function
+
         while (!move) {
             move = this.generateRandomComputerMove(colour);
         }
@@ -30,7 +32,7 @@ export default class Controller1P extends Controller {
 
         this.movePiece(startSpace, endSpace, pieceToMove);
 
-        this.changeTurn();
+        this.checkGameOver(endSpace);
     }
 
     moveComputerMedium() {
@@ -61,7 +63,7 @@ export default class Controller1P extends Controller {
         if (takeMove) {
             const {pieceToMove, startSpace, endSpace} = takeMove;
             this.movePiece(startSpace, endSpace, pieceToMove);
-            this.changeTurn();
+            this.checkGameOver(endSpace);
         } else {
             this.moveComputerEasy();
         }
