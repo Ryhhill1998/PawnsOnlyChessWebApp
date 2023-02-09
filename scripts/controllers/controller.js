@@ -87,11 +87,10 @@ export default class Controller {
         this.view.addPieceTaken(turn, pieceTaken, additionalPieces);
     }
 
-    updatePiecesTakenUndo(space) {
-        const turn = this.model.turn;
+    updatePiecesTakenUndo(space, colour) {
         let additionalPieces;
 
-        if (turn === "white") {
+        if (colour === "white") {
             this.model.decrementWhitePiecesTaken();
             additionalPieces = this.model.getWhitePiecesTaken() - 4;
         } else {
@@ -99,7 +98,7 @@ export default class Controller {
             additionalPieces = this.model.getBlackPiecesTaken() - 4;
         }
 
-        this.view.replacePieceTaken(turn, additionalPieces, space);
+        this.view.replacePieceTaken(colour, additionalPieces, space);
     }
 
     movePiece(previousSpace, newSpace, pieceBeingMoved) {
@@ -196,7 +195,7 @@ export default class Controller {
         }
     }
 
-    movePieceBack(move) {
+    movePieceBack(move, colour) {
         const {startSpace, endSpace, firstMove, take} = move;
         const lastPieceMoved = this.view.getPiece(endSpace);
 
@@ -213,7 +212,7 @@ export default class Controller {
 
         // if move was take, remove piece taken and add to board at end space
         if (take) {
-            this.updatePiecesTakenUndo(endSpace);
+            this.updatePiecesTakenUndo(endSpace, colour);
         }
 
         // deselect current piece
@@ -223,15 +222,28 @@ export default class Controller {
     undoClicked() {
         if (this.model.undoJustUsed || this.model.gameOver || !this.model.moveHasBeenMade) return;
 
-        const turn = this.model.turn;
+        // TODO - CHECK IF COMPUTER MOVE WAS TAKE
+        console.log(this.model.blackLastMove)
 
-        let lastMove = turn === "white" ? this.model.whiteLastMove : this.model.blackLastMove;
+        let turn = this.model.turn;
 
-        this.movePieceBack(lastMove);
+        let lastMove;
+
+        if (turn === "white") {
+            if (this.model.blackLastMove.take) {
+                lastMove = this.model.blackLastMove;
+                turn = "black";
+            } else {
+                lastMove = this.model.whiteLastMove;
+                turn = "white";
+            }
+        }
+
+        this.movePieceBack(lastMove, turn);
 
         lastMove = turn === "white" ? this.model.blackLastMove : this.model.whiteLastMove;
 
-        this.movePieceBack(lastMove);
+        this.movePieceBack(lastMove, turn === "white" ? "black" : "white");
 
         this.model.undoLastMove();
 
