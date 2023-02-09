@@ -122,10 +122,13 @@ export default class Controller {
         this.model.updateLastMove(previousSpace, newSpace, isFirstMove, moveIsTake);
 
         // show last move in view
-        this.view.showPreviousMove(this.model.lastMove);
+        const colour = this.view.getPieceColour(pieceBeingMoved);
+        const lastMove = colour === "white" ? this.model.whiteLastMove : this.model.blackLastMove;
+        this.view.showPreviousMove(lastMove);
 
         // hide second last move in view
-        this.view.hidePreviousMove(this.model.secondLastMove);
+        const secondLastMove = colour === "white" ? this.model.blackLastMove : this.model.whiteLastMove;
+        this.view.hidePreviousMove(secondLastMove);
     }
 
     changeActivePlayer(previous, current) {
@@ -152,6 +155,7 @@ export default class Controller {
             this.view.displayWinner(turn);
         } else {
             this.changeTurn();
+            // TODO - CHECK IF MOVE IS POSSIBLE FOR NEXT PLAYER, IF NOT GAME IS A STALEMATE AND ENDS
         }
     }
 
@@ -168,6 +172,7 @@ export default class Controller {
 
         if ((!piece || this.view.getPieceColour(pieceSelected) !== this.view.getPieceColour(piece))
             && pieceSelected) {
+
             // check if move is valid
             const [x, y] = this.view.getCoordinatesFromSpace(space);
             if (!this.model.moveIsValid(x, y)) return;
@@ -191,28 +196,20 @@ export default class Controller {
         }
     }
 
-    undoClicked() {
-        if (this.model.undoJustUsed || this.model.gameOver || !this.model.lastMove.startSpace) return;
-
-        const {startSpace, endSpace, firstMove, take} = this.model.lastMove;
+    movePieceBack(move) {
+        const {startSpace, endSpace, firstMove, take} = move;
         const lastPieceMoved = this.view.getPiece(endSpace);
 
         // move piece in view from end space to start space
         this.view.movePiece(lastPieceMoved, endSpace, startSpace);
 
         // deselect the current last move in view
-        this.view.hidePreviousMove(this.model.lastMove);
+        this.view.hidePreviousMove(move);
 
         // if move was first move, revert image src in view
         if (firstMove) {
             this.view.undoFirstMove(lastPieceMoved);
         }
-
-        // undo last move in model
-        this.model.undoLastMove();
-
-        // select the new last move in view
-        this.view.showPreviousMove(this.model.lastMove);
 
         // if move was take, remove piece taken and add to board at end space
         if (take) {
@@ -221,6 +218,26 @@ export default class Controller {
 
         // deselect current piece
         this.deselectPiece();
+    }
+
+    undoClicked() {
+        if (this.model.undoJustUsed || this.model.gameOver || !this.model.moveHasBeenMade) return;
+
+        const turn = this.model.turn;
+
+        let lastMove = turn === "white" ? this.model.whiteLastMove : this.model.blackLastMove;
+
+        this.movePieceBack(lastMove);
+
+        lastMove = turn === "white" ? this.model.blackLastMove : this.model.whiteLastMove;
+
+        this.movePieceBack(lastMove);
+
+        this.model.undoLastMove();
+
+        lastMove = turn === "white" ? this.model.blackLastMove : this.model.whiteLastMove;
+
+        this.view.showPreviousMove(lastMove);
     }
 
     infoClicked() {
