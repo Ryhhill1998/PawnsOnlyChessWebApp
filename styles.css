@@ -239,10 +239,6 @@ hr {
     z-index: 20;
 }
 
-.no-display {
-    display: none;
-}
-
 /* GAME MODE POPUP */
 .game-mode-pop-up {
     height: 100%;
@@ -287,4 +283,8 @@ hr {
 .game-mode-pop-up .two-player {
     color: #3A8891;
     background-color: white;
+}
+
+.no-display {
+    display: none;
 }
