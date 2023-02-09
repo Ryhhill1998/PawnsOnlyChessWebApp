@@ -2,9 +2,9 @@ import Controller from "./controller.js";
 
 export default class Controller1P extends Controller {
 
-    constructor(model, view) {
+    constructor(model, view, level) {
         super(model, view, "1P");
-        this.level = "medium";
+        this.level = level;
     }
 
     moveComputer() {

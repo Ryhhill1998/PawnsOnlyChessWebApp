@@ -29,7 +29,7 @@ export default class Controller {
         const possibleMoves = this.model.generatePossibleMoves(pieceColour, pieceHasMoved, ...coordinates);
         this.model.possibleMoves = this.filterPossibleMoves(space, possibleMoves);
 
-        // show piece selected in view
+        // show selected piece in view
         this.view.addPieceSelectedOverlay(space);
 
         // show possible moves in view
@@ -42,11 +42,16 @@ export default class Controller {
         if (!piece) return;
 
         const colour = this.view.getPieceColour(piece);
+        let standardMovesAvailable = true;
 
         return possibleMoves
             .filter(move => {
                 if (move.type === "standard") {
-                    return this.view.spaceIsFree(...move.coordinates);
+                    if (!this.view.spaceIsFree(...move.coordinates)) {
+                        standardMovesAvailable = false;
+                    }
+
+                    return standardMovesAvailable && this.view.spaceIsFree(...move.coordinates);
                 } else {
                     const colourToTake = colour === "white" ? "black" : "white";
                     return this.takeIsPossible(colourToTake, ...move.coordinates);

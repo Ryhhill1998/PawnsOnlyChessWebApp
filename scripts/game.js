@@ -11,18 +11,24 @@ const selectGameMode = ({target}) => {
     const chosenGameMode = target.closest("button")?.id;
     if (!chosenGameMode) return;
 
-    const model = new Model();
-    const view = new View();
-
     if (chosenGameMode === "single-player") {
-        new Controller1P(model, view);
         levelSelectorPopUp.classList.remove("no-display");
         overlay.classList.remove("no-display");
     } else {
-        new Controller2P(model, view);
+        new Controller2P(new Model(), new View());
     }
 
     gameModePopUp.classList.add("no-display");
 }
 
+const selectLevel = ({target}) => {
+    const chosenLevel = target.closest("button")?.id;
+    if (!chosenLevel) return;
+
+    new Controller1P(new Model(), new View(), chosenLevel);
+    levelSelectorPopUp.classList.add("no-display");
+    overlay.classList.add("no-display");
+}
+
 gameModePopUp.addEventListener("click", selectGameMode);
+levelSelectorPopUp.addEventListener("click", selectLevel);
