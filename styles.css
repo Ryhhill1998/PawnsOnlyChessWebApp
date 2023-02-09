@@ -240,7 +240,7 @@ hr {
 }
 
 /* GAME MODE POPUP */
-.game-mode-pop-up {
+.game-mode {
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -248,20 +248,20 @@ hr {
     gap: 5em;
 }
 
-.game-mode-pop-up .welcome {
+.game-mode .welcome {
     margin-top: 2em;
 }
 
-.game-mode-pop-up .welcome h2 {
+.game-mode .welcome h2 {
     font-size: 1.5rem;
     margin-bottom: 0.5em;
 }
 
-.game-mode-pop-up .welcome h1 {
+.game-mode .welcome h1 {
     font-size: 2.5rem;
 }
 
-.game-mode-pop-up button {
+.game-mode button {
     width: 200px;
     padding: 1.75em 0.5em;
     border-radius: 8px;
@@ -271,18 +271,62 @@ hr {
     letter-spacing: 0.075em;
 }
 
-.game-mode-pop-up .single-player {
+.game-mode .single-player {
     color: white;
     background-color: #3A8891;
 }
 
-.game-mode-pop-up .single-player i {
+.game-mode .single-player i {
     color: white;
 }
 
-.game-mode-pop-up .two-player {
+.game-mode .two-player {
     color: #3A8891;
     background-color: white;
+}
+
+/* LEVEL SELECTOR */
+.level-selector {
+    width: 400px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5em;
+}
+
+.level-selector button {
+    width: 150px;
+    padding: 1.5em 1em;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    font-family: 'Roboto', sans-serif;
+    letter-spacing: 0.075em;
+}
+
+.level-selector .easy {
+    background-color: green;
+}
+
+.level-selector .easy, .level-selector .easy i {
+    color: white;
+}
+
+.level-selector .medium {
+    background-color: yellow;
+}
+
+.level-selector .medium, .level-selector .medium i {
+    color: black;
+}
+
+.level-selector .hard {
+    background-color: red;
+}
+
+.level-selector .hard, .level-selector .hard i {
+    color: black;
 }
 
 .no-display {

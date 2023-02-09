@@ -267,6 +267,10 @@ class View {
         return colour === "white" ? this.#whitePieces : this.#blackPieces;
     }
 
+    instructionsAreOpen() {
+        return !this.#instructions.classList.contains("no-display");
+    }
+
     showInstructions() {
         this.#instructions.classList.remove("no-display");
     }

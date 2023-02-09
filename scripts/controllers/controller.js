@@ -224,6 +224,8 @@ export default class Controller {
     }
 
     #hideInstructionsAndOverlay() {
+        if (!this.view.instructionsAreOpen()) return;
+
         this.view.hideInstructions();
         this.view.hideOverlay();
     }
