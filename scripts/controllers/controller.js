@@ -1,12 +1,9 @@
-import Model from "../model.js";
-import View from "../views/view.js";
+export default class Controller {
 
-class Controller1P {
-
-    constructor(model, view) {
+    constructor(model, view, type) {
         this.model = model;
         this.view = view;
-        this.playerColour = "white";
+        this.type = type;
         this.init();
     }
 
@@ -39,25 +36,17 @@ class Controller1P {
         this.view.showPossibleMoves(this.model.possibleMoves);
     }
 
-
-
     filterPossibleMoves(space, possibleMoves) {
         const piece = this.view.getPiece(space);
 
         if (!piece) return;
 
         const colour = this.view.getPieceColour(piece);
-        let standardMovesAvailable = true;
 
         return possibleMoves
             .filter(move => {
                 if (move.type === "standard") {
-                    const spaceIsFree = this.view.spaceIsFree(...move.coordinates);
-                    if (!spaceIsFree) {
-                        standardMovesAvailable = false;
-                    }
-
-                    return spaceIsFree && standardMovesAvailable;
+                    return this.view.spaceIsFree(...move.coordinates);
                 } else {
                     const colourToTake = colour === "white" ? "black" : "white";
                     return this.takeIsPossible(colourToTake, ...move.coordinates);
@@ -161,113 +150,6 @@ class Controller1P {
         }
     }
 
-    moveComputerEasy() {
-        if (this.model.gameOver) return;
-
-        const colour = this.model.turn;
-
-        let move = null;
-
-        while (!move) {
-            move = this.generateRandomComputerMove(colour);
-        }
-
-        const {pieceToMove, startSpace, endSpace} = move;
-
-        this.movePiece(startSpace, endSpace, pieceToMove);
-
-        this.changeTurn();
-    }
-
-    moveComputerMedium() {
-        if (this.model.gameOver) return;
-
-        const colour = this.model.turn;
-
-        const pieces = this.view.getPiecesArray(colour);
-        let takeMove = null;
-
-        for (let i = 0; i < pieces.length; i++) {
-            const piece = pieces[i];
-            const hasMoved = this.view.pieceHasMoved(piece);
-            const space = this.view.getSpaceFromPiece(piece);
-            const [x, y] = this.view.getCoordinatesFromSpace(space);
-            const possibleMoves = this.model.generatePossibleMoves(colour, hasMoved, x, y);
-            const filteredMoves = this.filterPossibleMoves(space, possibleMoves);
-
-            for (let j = 0; j < filteredMoves.length; j++) {
-                const possibleMove = filteredMoves[j];
-                if (possibleMove.type === "take") {
-                    takeMove = this.formatMove(piece, space, possibleMove);
-                    break;
-                }
-            }
-        }
-
-        if (takeMove) {
-            const {pieceToMove, startSpace, endSpace} = takeMove;
-            this.movePiece(startSpace, endSpace, pieceToMove);
-            this.changeTurn();
-        } else {
-            this.moveComputerEasy();
-        }
-    }
-
-    generateRandomComputerMove(colour) {
-        const pieceToMove = this.view.getRandomPiece(colour);
-        const hasMoved = this.view.pieceHasMoved(pieceToMove);
-        const space = this.view.getSpaceFromPiece(pieceToMove);
-        const [x, y] = this.view.getCoordinatesFromSpace(space);
-        const possibleMoves = this.model.generatePossibleMoves(colour, hasMoved, x, y);
-        this.model.possibleMoves = this.filterPossibleMoves(space, possibleMoves);
-        const chosenMove = this.model.getComputerMove();
-
-        if (!chosenMove) return null;
-
-        return this.formatMove(pieceToMove, space, chosenMove);
-    }
-
-    formatMove(pieceToMove, startSpace, move) {
-        const endSpace = this.view.getSpaceFromCoordinates(...move.coordinates);
-
-        return {
-            pieceToMove,
-            startSpace,
-            endSpace
-        }
-    }
-
-    spaceClicked({target}) {
-        if (this.model.gameOver) return;
-
-        const space = this.view.getSpaceClicked(target);
-        const piece = this.view.getPiece(space);
-
-        const spaceSelected = this.model.spaceSelected;
-        const pieceSelected = this.view.getPiece(spaceSelected);
-
-        if ((!piece || this.view.getPieceColour(pieceSelected) !== this.view.getPieceColour(piece))
-            && pieceSelected) {
-            // check if move is valid
-            const [x, y] = this.view.getCoordinatesFromSpace(space);
-            if (!this.model.moveIsValid(x, y)) return;
-
-            this.movePiece(spaceSelected, space, pieceSelected);
-
-            // check if game is over
-            this.checkGameOver(space, pieceSelected);
-
-            this.deselectPiece();
-
-            this.moveComputerMedium();
-
-        } else if (space === spaceSelected) {
-            this.deselectPiece();
-        } else {
-            this.selectPiece(space, piece);
-        }
-    }
-
     undoClicked() {
         if (this.model.undoJustUsed || this.model.gameOver || !this.model.lastMove.startSpace) return;
 
@@ -326,5 +208,3 @@ class Controller1P {
         this.view.addCloseInstructionsButtonClickedEventListener(this.closeInstructionsButtonClicked.bind(this));
     }
 }
-
-const app = new Controller1P(new Model(), new View());
