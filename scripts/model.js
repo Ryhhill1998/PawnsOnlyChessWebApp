@@ -4,76 +4,46 @@ class Model {
     #possibleMoves;
     #turn;
     #gameOver;
-    #piecesTaken;
-    #lastMove;
-    #secondLastMove;
-    #undoJustUsed;
+    #whiteMoves = [];
+    #blackMoves = [];
 
     constructor() {
         this.#spaceSelected = null;
         this.#possibleMoves = [];
         this.#turn = "white";
         this.#gameOver = false;
-
-        this.#piecesTaken = {
-            white: 0,
-            black: 0
-        }
-
-        this.#lastMove = {
-            startSpace: null,
-            endSpace: null,
-            firstMove: false,
-            take: false
-        };
-
-        this.#initialiseSecondLastMove();
-
-        this.#undoJustUsed = false;
     }
 
-    #initialiseSecondLastMove() {
-        this.#secondLastMove = {
-            startSpace: null,
-            endSpace: null
-        };
+    #getWhiteLastMove() {
+        return this.#whiteMoves.at(-1);
+    }
+
+    #getBlackLastMove() {
+        return this.#blackMoves.at(-1);
     }
 
     get lastMove() {
-        return this.#lastMove;
+        return this.#turn === "white" ? this.#getBlackLastMove() : this.#getWhiteLastMove();
     }
 
-    get secondLastMove() {
-        return this.#secondLastMove;
-    }
+    addMove(pieceMoved, startSpace, endSpace, isFirstMove, pieceTaken) {
+        const move = {
+            pieceMoved,
+            startSpace,
+            endSpace,
+            isFirstMove,
+            pieceTaken
+        };
 
-    updateLastMove(startSpace, endSpace, firstMove, take) {
-        this.#secondLastMove.startSpace = this.#lastMove.startSpace;
-        this.#secondLastMove.endSpace = this.#lastMove.endSpace;
-
-        this.#lastMove.startSpace = startSpace;
-        this.#lastMove.endSpace = endSpace;
-        this.#lastMove.firstMove = firstMove;
-        this.#lastMove.take = take;
-
-        this.#undoJustUsed = false;
+        const moves = this.#turn === "white" ? this.#whiteMoves : this.#blackMoves;
+        moves.push(move);
     }
 
     undoLastMove() {
-        const {startSpace, endSpace} = this.#secondLastMove;
+        const moves = this.#turn === "white" ? this.#blackMoves : this.#whiteMoves;
+        if (!moves.length) return;
 
-        this.#lastMove = {
-            startSpace: startSpace,
-            endSpace: endSpace,
-        };
-
-        this.#initialiseSecondLastMove();
-        this.changeTurn();
-        this.#undoJustUsed = true;
-    }
-
-    get undoJustUsed() {
-        return this.#undoJustUsed;
+        return moves.pop();
     }
 
     set spaceSelected(space) {
@@ -85,27 +55,23 @@ class Model {
     }
 
     getWhitePiecesTaken() {
-        return this.#piecesTaken.white;
+        return this.#whiteMoves.reduce((taken, move) => {
+            if (move.pieceTaken) {
+                return taken + 1;
+            }
+
+            return taken;
+        }, 0);
     }
 
     getBlackPiecesTaken() {
-        return this.#piecesTaken.black;
-    }
+        return this.#blackMoves.reduce((taken, move) => {
+            if (move.pieceTaken) {
+                return taken + 1;
+            }
 
-    incrementWhitePiecesTaken() {
-        this.#piecesTaken.white++;
-    }
-
-    incrementBlackPiecesTaken() {
-        this.#piecesTaken.black++;
-    }
-
-    decrementWhitePiecesTaken() {
-        this.#piecesTaken.white--;
-    }
-
-    decrementBlackPiecesTaken() {
-        this.#piecesTaken.black--;
+            return taken;
+        }, 0);
     }
 
     generatePossibleMoves(colour, hasMoved, x, y) {
@@ -218,6 +184,10 @@ class Model {
 
     get gameOver() {
         return this.#gameOver;
+    }
+
+    set gameOver(value) {
+        this.#gameOver = value;
     }
 }
 

@@ -8,8 +8,7 @@ export default class Controller {
     }
 
     deselectPiece() {
-        this.view.removeSelectedOverlay(this.model.spaceSelected);
-        this.view.hidePossibleMoves(this.model.possibleMoves);
+        this.view.removeAllOverlays();
         this.model.spaceSelected = null;
     }
 
@@ -77,55 +76,49 @@ export default class Controller {
         let additionalPieces;
 
         if (turn === "white") {
-            this.model.incrementWhitePiecesTaken();
             additionalPieces = this.model.getWhitePiecesTaken() - 4;
         } else {
-            this.model.incrementBlackPiecesTaken();
             additionalPieces = this.model.getBlackPiecesTaken() - 4;
         }
 
         this.view.addPieceTaken(turn, pieceTaken, additionalPieces);
     }
 
-    updatePiecesTakenUndo(space) {
-        const turn = this.model.turn;
+    updatePiecesTakenUndo(pieceTaken, spaceTakenFrom) {
+        const colour = this.view.getPieceColour(pieceTaken);
         let additionalPieces;
 
-        if (turn === "white") {
-            this.model.decrementWhitePiecesTaken();
-            additionalPieces = this.model.getWhitePiecesTaken() - 4;
-        } else {
-            this.model.decrementBlackPiecesTaken();
+        if (colour === "white") {
             additionalPieces = this.model.getBlackPiecesTaken() - 4;
+        } else {
+            additionalPieces = this.model.getWhitePiecesTaken() - 4;
         }
 
-        this.view.replacePieceTaken(turn, additionalPieces, space);
+        this.view.replacePieceTaken(pieceTaken, spaceTakenFrom, additionalPieces);
     }
 
-    movePiece(previousSpace, newSpace, pieceBeingMoved) {
+    movePiece(previousSpace, newSpace, pieceBeingMoved, type = "move") {
         const moveIsTake = this.view.getPiece(newSpace) !== null;
+        const isFirstMove = !this.view.pieceHasMoved(pieceBeingMoved);
 
         // check if move is a take move
         if (moveIsTake) {
-
             // piece is taken so remove taken piece from new square
             const pieceTaken = this.view.getPiece(newSpace);
             newSpace.removeChild(pieceTaken);
 
+            // add take move in model
+            this.model.addMove(pieceBeingMoved, previousSpace, newSpace, isFirstMove, pieceTaken);
+
+            // update pieces taken display in player info
             this.updatePiecesTakenMove(pieceTaken);
+        } else if (type === "move") {
+            // add standard move in model
+            this.model.addMove(pieceBeingMoved, previousSpace, newSpace, isFirstMove, null);
         }
 
         // remove image element from space piece is being moved from
-        const isFirstMove = !this.view.pieceHasMoved(pieceBeingMoved);
         this.view.movePiece(pieceBeingMoved, previousSpace, newSpace);
-
-        this.model.updateLastMove(previousSpace, newSpace, isFirstMove, moveIsTake);
-
-        // show last move in view
-        this.view.showPreviousMove(this.model.lastMove);
-
-        // hide second last move in view
-        this.view.hidePreviousMove(this.model.secondLastMove);
     }
 
     changeActivePlayer(previous, current) {
@@ -146,13 +139,40 @@ export default class Controller {
         const y = this.view.getCoordinatesFromSpace(moveSpace)[1];
 
         // check if colour that just moved has won
-        const gameOver = turn === "white" ? this.model.whiteHasWon(y) : this.model.blackHasWon(y)
+        const gameOver = turn === "white" ? this.model.whiteHasWon(y) : this.model.blackHasWon(y);
 
         if (gameOver) {
             this.view.displayWinner(turn);
         } else {
-            this.changeTurn();
+            if (!this.moveIsPossible()) {
+                this.model.gameOver = true;
+                console.log("STALEMATE!");
+            }
         }
+
+        this.changeTurn();
+    }
+
+    moveIsPossible() {
+        let movePossible = false;
+        const piecesArray = this.view.getPiecesArray(this.model.turn);
+
+        for (let i = 0; i < piecesArray.length; i++) {
+            const piece = piecesArray[i];
+            const space = this.view.getSpaceFromPiece(piece);
+            const hasMoved = this.view.pieceHasMoved(piece);
+            const [x, y] = this.view.getCoordinatesFromSpace(space);
+
+            const possibleMoves = this.model.generatePossibleMoves(this.model.turn, hasMoved, x, y);
+            const filteredMoves = this.filterPossibleMoves(space, possibleMoves);
+
+            if (filteredMoves.length) {
+                movePossible = true;
+                break;
+            }
+        }
+
+        return movePossible;
     }
 
     moveComputer() {}
@@ -168,6 +188,7 @@ export default class Controller {
 
         if ((!piece || this.view.getPieceColour(pieceSelected) !== this.view.getPieceColour(piece))
             && pieceSelected) {
+
             // check if move is valid
             const [x, y] = this.view.getCoordinatesFromSpace(space);
             if (!this.model.moveIsValid(x, y)) return;
@@ -177,10 +198,14 @@ export default class Controller {
             // check if game is over
             this.checkGameOver(space);
 
+            // remove all overlays
             this.deselectPiece();
 
-            // if game type is 1P, make computer move
-            if (this.type === "1P") {
+            // show last move in view
+            this.view.showLastMove(this.model.lastMove);
+
+            // if game type is 1P and game is not over, make computer move
+            if (!this.model.gameOver && this.type === "1P") {
                 this.moveComputer();
             }
 
@@ -192,35 +217,31 @@ export default class Controller {
     }
 
     undoClicked() {
-        if (this.model.undoJustUsed || this.model.gameOver || !this.model.lastMove.startSpace) return;
+        if (this.model.gameOver || !this.model.lastMove) return;
 
-        const {startSpace, endSpace, firstMove, take} = this.model.lastMove;
-        const lastPieceMoved = this.view.getPiece(endSpace);
+        const {pieceMoved, startSpace, endSpace, isFirstMove, pieceTaken} = this.model.undoLastMove();
 
-        // move piece in view from end space to start space
-        this.view.movePiece(lastPieceMoved, endSpace, startSpace);
+        this.movePiece(endSpace, startSpace, pieceMoved, "undo");
 
-        // deselect the current last move in view
-        this.view.hidePreviousMove(this.model.lastMove);
-
-        // if move was first move, revert image src in view
-        if (firstMove) {
-            this.view.undoFirstMove(lastPieceMoved);
+        if (isFirstMove) {
+            this.view.undoFirstMove(pieceMoved);
         }
 
-        // undo last move in model
-        this.model.undoLastMove();
-
-        // select the new last move in view
-        this.view.showPreviousMove(this.model.lastMove);
-
-        // if move was take, remove piece taken and add to board at end space
-        if (take) {
-            this.updatePiecesTakenUndo(endSpace);
+        if (pieceTaken) {
+            this.updatePiecesTakenUndo(pieceTaken, endSpace);
         }
 
-        // deselect current piece
+        // remove all overlays
         this.deselectPiece();
+
+        this.changeTurn();
+
+        // show last move in view
+        const lastMove = this.model.lastMove;
+
+        if (lastMove) {
+            this.view.showLastMove(lastMove);
+        }
     }
 
     infoClicked() {

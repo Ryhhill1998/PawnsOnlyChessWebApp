@@ -22,8 +22,6 @@ export default class Controller1P extends Controller {
 
         let move = null;
 
-        // TODO - CHECK IF MOVE IS POSSIBLE - include this in checkGameOver function
-
         while (!move) {
             move = this.generateRandomComputerMove(colour);
         }
@@ -33,6 +31,12 @@ export default class Controller1P extends Controller {
         this.movePiece(startSpace, endSpace, pieceToMove);
 
         this.checkGameOver(endSpace);
+
+        // remove all overlays
+        this.deselectPiece();
+
+        // show last move in view
+        this.view.showLastMove(this.model.lastMove);
     }
 
     moveComputerMedium() {
@@ -64,6 +68,13 @@ export default class Controller1P extends Controller {
             const {pieceToMove, startSpace, endSpace} = takeMove;
             this.movePiece(startSpace, endSpace, pieceToMove);
             this.checkGameOver(endSpace);
+
+            // remove all overlays
+            this.deselectPiece();
+
+            // show last move in view
+            this.view.showLastMove(this.model.lastMove);
+
         } else {
             this.moveComputerEasy();
         }
@@ -91,5 +102,10 @@ export default class Controller1P extends Controller {
             startSpace,
             endSpace
         }
+    }
+
+    undoClicked() {
+        super.undoClicked();
+        super.undoClicked();
     }
 }
