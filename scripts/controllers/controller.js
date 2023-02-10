@@ -139,17 +139,18 @@ export default class Controller {
         const y = this.view.getCoordinatesFromSpace(moveSpace)[1];
 
         // check if colour that just moved has won
-        const gameOver = turn === "white" ? this.model.whiteHasWon(y) : this.model.blackHasWon(y)
+        const gameOver = turn === "white" ? this.model.whiteHasWon(y) : this.model.blackHasWon(y);
 
         if (gameOver) {
             this.view.displayWinner(turn);
         } else {
-            this.changeTurn();
             if (!this.moveIsPossible()) {
                 this.model.gameOver = true;
                 console.log("STALEMATE!");
             }
         }
+
+        this.changeTurn();
     }
 
     moveIsPossible() {
@@ -203,7 +204,7 @@ export default class Controller {
             // show last move in view
             this.view.showLastMove(this.model.lastMove);
 
-            // if game type is 1P, make computer move
+            // if game type is 1P and game is not over, make computer move
             if (!this.model.gameOver && this.type === "1P") {
                 this.moveComputer();
             }
