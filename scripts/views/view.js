@@ -193,23 +193,11 @@ class View {
         playerInfoColour === "white" ? this.#blackPieces = updatedPieces : this.#whitePieces = updatedPieces;
     }
 
-    replacePieceTaken(playerInfoColour, additionalPieces, spaceTakenFrom) {
-        const playerInfoElement = playerInfoColour === "white" ? this.#whitePlayerInfo : this.#blackPlayerInfo;
-        const piecesTakenElement = this.#getElement(".pieces-taken", playerInfoElement);
-        const piecesArray = playerInfoColour === "white" ? this.#blackPieces : this.#whitePieces;
-
-        const lastPieceTaken = piecesTakenElement.querySelector(".pieces img:last-child");
-        spaceTakenFrom.appendChild(lastPieceTaken);
-
-        if (additionalPieces >= 0) {
-            const additionalPiecesElement = this.#getElement(".additional-pieces", piecesTakenElement);
-            additionalPiecesElement.innerHTML = additionalPieces === 0 ? "" : "+" + additionalPieces;
-            const pieceCopy = lastPieceTaken.cloneNode();
-            const piecesElement = this.#getElement(".pieces", piecesTakenElement);
-            piecesElement.appendChild(pieceCopy);
-        }
-
-        piecesArray.push(lastPieceTaken);
+    replacePieceTaken(pieceTaken, spaceTakenFrom) {
+        spaceTakenFrom.appendChild(pieceTaken);
+        const colour = this.getPieceColour(pieceTaken);
+        const piecesArray = colour === "white" ? this.#whitePieces : this.#blackPieces;
+        piecesArray.push(pieceTaken);
     }
 
     movePiece(piece, spaceFrom, spaceTo) {

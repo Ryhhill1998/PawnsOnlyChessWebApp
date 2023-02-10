@@ -6,14 +6,12 @@ class Model {
     #gameOver;
     #whiteMoves = [];
     #blackMoves = [];
-    #undoJustUsed;
 
     constructor() {
         this.#spaceSelected = null;
         this.#possibleMoves = [];
         this.#turn = "white";
         this.#gameOver = false;
-        this.#undoJustUsed = false;
     }
 
     #getWhiteLastMove() {
@@ -25,11 +23,12 @@ class Model {
     }
 
     get lastMove() {
-        return this.#turn === "white" ? this.#getWhiteLastMove() : this.#getBlackLastMove();
+        return this.#turn === "white" ? this.#getBlackLastMove() : this.#getWhiteLastMove();
     }
 
-    addMove(startSpace, endSpace, isFirstMove, pieceTaken) {
+    addMove(pieceMoved, startSpace, endSpace, isFirstMove, pieceTaken) {
         const move = {
+            pieceMoved,
             startSpace,
             endSpace,
             isFirstMove,
@@ -41,10 +40,10 @@ class Model {
     }
 
     undoLastMove() {
-    }
+        const moves = this.#turn === "white" ? this.#blackMoves : this.#whiteMoves;
+        if (!moves.length) return;
 
-    get undoJustUsed() {
-        return this.#undoJustUsed;
+        return moves.pop();
     }
 
     set spaceSelected(space) {

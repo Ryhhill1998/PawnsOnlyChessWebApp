@@ -96,7 +96,7 @@ export default class Controller {
         this.view.replacePieceTaken(colour, additionalPieces, space);
     }
 
-    movePiece(previousSpace, newSpace, pieceBeingMoved) {
+    movePiece(previousSpace, newSpace, pieceBeingMoved, type = "move") {
         const moveIsTake = this.view.getPiece(newSpace) !== null;
         const isFirstMove = !this.view.pieceHasMoved(pieceBeingMoved);
 
@@ -107,23 +107,17 @@ export default class Controller {
             newSpace.removeChild(pieceTaken);
 
             // add take move in model
-            this.model.addMove(previousSpace, newSpace, isFirstMove, pieceTaken);
+            this.model.addMove(pieceBeingMoved, previousSpace, newSpace, isFirstMove, pieceTaken);
 
             // update pieces taken display in player info
             this.updatePiecesTakenMove(pieceTaken);
-        } else {
+        } else if (type === "move") {
             // add standard move in model
-            this.model.addMove(previousSpace, newSpace, isFirstMove, null);
+            this.model.addMove(pieceBeingMoved, previousSpace, newSpace, isFirstMove, null);
         }
 
         // remove image element from space piece is being moved from
         this.view.movePiece(pieceBeingMoved, previousSpace, newSpace);
-
-        // remove all overlays in view
-        this.view.removeAllOverlays();
-
-        // show last move in view
-        this.view.showLastMove(this.model.lastMove);
     }
 
     changeActivePlayer(previous, current) {
@@ -202,7 +196,11 @@ export default class Controller {
             // check if game is over
             this.checkGameOver(space);
 
+            // remove all overlays
             this.deselectPiece();
+
+            // show last move in view
+            this.view.showLastMove(this.model.lastMove);
 
             // if game type is 1P, make computer move
             if (!this.model.gameOver && this.type === "1P") {
@@ -217,6 +215,31 @@ export default class Controller {
     }
 
     undoClicked() {
+        if (this.model.gameOver || !this.model.lastMove) return;
+
+        const {pieceMoved, startSpace, endSpace, isFirstMove, pieceTaken} = this.model.undoLastMove();
+
+        this.movePiece(endSpace, startSpace, pieceMoved, "undo");
+
+        if (isFirstMove) {
+            this.view.undoFirstMove(pieceMoved);
+        }
+
+        if (pieceTaken) {
+            this.view.replacePieceTaken(pieceTaken, endSpace);
+        }
+
+        // remove all overlays
+        this.deselectPiece();
+
+        this.changeTurn();
+
+        // show last move in view
+        const lastMove = this.model.lastMove;
+
+        if (lastMove) {
+            this.view.showLastMove(lastMove);
+        }
     }
 
     infoClicked() {
