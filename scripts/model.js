@@ -186,6 +186,10 @@ class Model {
     get gameOver() {
         return this.#gameOver;
     }
+
+    set gameOver(value) {
+        this.#gameOver = value;
+    }
 }
 
 export default Model;

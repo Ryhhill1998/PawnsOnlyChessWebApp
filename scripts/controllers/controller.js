@@ -99,19 +99,21 @@ export default class Controller {
     movePiece(previousSpace, newSpace, pieceBeingMoved) {
         const moveIsTake = this.view.getPiece(newSpace) !== null;
         const isFirstMove = !this.view.pieceHasMoved(pieceBeingMoved);
-        let pieceTaken = null;
 
         // check if move is a take move
         if (moveIsTake) {
             // piece is taken so remove taken piece from new square
-            pieceTaken = this.view.getPiece(newSpace);
+            const pieceTaken = this.view.getPiece(newSpace);
             newSpace.removeChild(pieceTaken);
 
+            // add take move in model
             this.model.addMove(previousSpace, newSpace, isFirstMove, pieceTaken);
 
+            // update pieces taken display in player info
             this.updatePiecesTakenMove(pieceTaken);
         } else {
-            this.model.addMove(previousSpace, newSpace, isFirstMove, pieceTaken);
+            // add standard move in model
+            this.model.addMove(previousSpace, newSpace, isFirstMove, null);
         }
 
         // remove image element from space piece is being moved from
@@ -148,8 +150,33 @@ export default class Controller {
             this.view.displayWinner(turn);
         } else {
             this.changeTurn();
-            // TODO - CHECK IF MOVE IS POSSIBLE FOR NEXT PLAYER, IF NOT GAME IS A STALEMATE AND ENDS
+            if (!this.moveIsPossible()) {
+                this.model.gameOver = true;
+                console.log("STALEMATE!");
+            }
         }
+    }
+
+    moveIsPossible() {
+        let movePossible = false;
+        const piecesArray = this.view.getPiecesArray(this.model.turn);
+
+        for (let i = 0; i < piecesArray.length; i++) {
+            const piece = piecesArray[i];
+            const space = this.view.getSpaceFromPiece(piece);
+            const hasMoved = this.view.pieceHasMoved(piece);
+            const [x, y] = this.view.getCoordinatesFromSpace(space);
+
+            const possibleMoves = this.model.generatePossibleMoves(this.model.turn, hasMoved, x, y);
+            const filteredMoves = this.filterPossibleMoves(space, possibleMoves);
+
+            if (filteredMoves.length) {
+                movePossible = true;
+                break;
+            }
+        }
+
+        return movePossible;
     }
 
     moveComputer() {}
@@ -178,7 +205,7 @@ export default class Controller {
             this.deselectPiece();
 
             // if game type is 1P, make computer move
-            if (this.type === "1P") {
+            if (!this.model.gameOver && this.type === "1P") {
                 this.moveComputer();
             }
 

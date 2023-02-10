@@ -52,7 +52,6 @@ export default class Controller1P extends Controller {
             for (let j = 0; j < filteredMoves.length; j++) {
                 const possibleMove = filteredMoves[j];
                 if (possibleMove.type === "take") {
-                    console.log("TAKE IS POSSIBLE")
                     takeMove = this.formatMove(piece, space, possibleMove);
                     break;
                 }
