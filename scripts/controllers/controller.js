@@ -84,16 +84,17 @@ export default class Controller {
         this.view.addPieceTaken(turn, pieceTaken, additionalPieces);
     }
 
-    updatePiecesTakenUndo(space, colour) {
+    updatePiecesTakenUndo(pieceTaken, spaceTakenFrom) {
+        const colour = this.view.getPieceColour(pieceTaken);
         let additionalPieces;
 
         if (colour === "white") {
-            additionalPieces = this.model.getWhitePiecesTaken() - 4;
-        } else {
             additionalPieces = this.model.getBlackPiecesTaken() - 4;
+        } else {
+            additionalPieces = this.model.getWhitePiecesTaken() - 4;
         }
 
-        this.view.replacePieceTaken(colour, additionalPieces, space);
+        this.view.replacePieceTaken(pieceTaken, spaceTakenFrom, additionalPieces);
     }
 
     movePiece(previousSpace, newSpace, pieceBeingMoved, type = "move") {
@@ -226,7 +227,7 @@ export default class Controller {
         }
 
         if (pieceTaken) {
-            this.view.replacePieceTaken(pieceTaken, endSpace);
+            this.updatePiecesTakenUndo(pieceTaken, endSpace);
         }
 
         // remove all overlays

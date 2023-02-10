@@ -175,29 +175,40 @@ class View {
         this.#removeClassFromElement(playerInfo, "active");
     }
 
-    addPieceTaken(playerInfoColour, piece, additionalPieces) {
+    addPieceTaken(playerInfoColour, pieceTaken, additionalPieces) {
         const playerInfoElement = playerInfoColour === "white" ? this.#whitePlayerInfo : this.#blackPlayerInfo;
         const piecesTakenElement = this.#getElement(".pieces-taken", playerInfoElement);
         const piecesArray = playerInfoColour === "white" ? this.#blackPieces : this.#whitePieces;
 
         if (additionalPieces <= 0) {
             const piecesElement = this.#getElement(".pieces", piecesTakenElement);
-            piecesElement.appendChild(piece);
+            piecesElement.appendChild(pieceTaken);
         } else {
             const additionalPiecesElement = this.#getElement(".additional-pieces", piecesTakenElement);
             additionalPiecesElement.innerHTML = "+" + additionalPieces;
         }
 
-        const updatedPieces = piecesArray.filter(p => p !== piece);
+        const updatedPieces = piecesArray.filter(p => p !== pieceTaken);
 
         playerInfoColour === "white" ? this.#blackPieces = updatedPieces : this.#whitePieces = updatedPieces;
     }
 
-    replacePieceTaken(pieceTaken, spaceTakenFrom) {
+    replacePieceTaken(pieceTaken, spaceTakenFrom, additionalPieces) {
         spaceTakenFrom.appendChild(pieceTaken);
         const colour = this.getPieceColour(pieceTaken);
+
         const piecesArray = colour === "white" ? this.#whitePieces : this.#blackPieces;
         piecesArray.push(pieceTaken);
+
+        const playerInfoElement = colour === "white" ? this.#blackPlayerInfo : this.#whitePlayerInfo;
+        const piecesTakenElement = this.#getElement(".pieces-taken", playerInfoElement);
+        const additionalPiecesElement = this.#getElement(".additional-pieces", piecesTakenElement);
+
+        if (additionalPieces === 0) {
+            additionalPiecesElement.innerHTML = "";
+        } else if (additionalPieces > 0) {
+            additionalPiecesElement.innerHTML = "+" + additionalPieces;
+        }
     }
 
     movePiece(piece, spaceFrom, spaceTo) {
