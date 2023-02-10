@@ -8,8 +8,7 @@ export default class Controller {
     }
 
     deselectPiece() {
-        this.view.removeSelectedOverlay(this.model.spaceSelected);
-        this.view.hidePossibleMoves(this.model.possibleMoves);
+        this.view.removeAllOverlays();
         this.model.spaceSelected = null;
     }
 
@@ -77,10 +76,8 @@ export default class Controller {
         let additionalPieces;
 
         if (turn === "white") {
-            this.model.incrementWhitePiecesTaken();
             additionalPieces = this.model.getWhitePiecesTaken() - 4;
         } else {
-            this.model.incrementBlackPiecesTaken();
             additionalPieces = this.model.getBlackPiecesTaken() - 4;
         }
 
@@ -91,10 +88,8 @@ export default class Controller {
         let additionalPieces;
 
         if (colour === "white") {
-            this.model.decrementWhitePiecesTaken();
             additionalPieces = this.model.getWhitePiecesTaken() - 4;
         } else {
-            this.model.decrementBlackPiecesTaken();
             additionalPieces = this.model.getBlackPiecesTaken() - 4;
         }
 
@@ -103,31 +98,30 @@ export default class Controller {
 
     movePiece(previousSpace, newSpace, pieceBeingMoved) {
         const moveIsTake = this.view.getPiece(newSpace) !== null;
+        const isFirstMove = !this.view.pieceHasMoved(pieceBeingMoved);
+        let pieceTaken = null;
 
         // check if move is a take move
         if (moveIsTake) {
-
             // piece is taken so remove taken piece from new square
-            const pieceTaken = this.view.getPiece(newSpace);
+            pieceTaken = this.view.getPiece(newSpace);
             newSpace.removeChild(pieceTaken);
 
+            this.model.addMove(previousSpace, newSpace, isFirstMove, pieceTaken);
+
             this.updatePiecesTakenMove(pieceTaken);
+        } else {
+            this.model.addMove(previousSpace, newSpace, isFirstMove, pieceTaken);
         }
 
         // remove image element from space piece is being moved from
-        const isFirstMove = !this.view.pieceHasMoved(pieceBeingMoved);
         this.view.movePiece(pieceBeingMoved, previousSpace, newSpace);
 
-        this.model.updateLastMove(previousSpace, newSpace, isFirstMove, moveIsTake);
+        // remove all overlays in view
+        this.view.removeAllOverlays();
 
         // show last move in view
-        const colour = this.view.getPieceColour(pieceBeingMoved);
-        const lastMove = colour === "white" ? this.model.whiteLastMove : this.model.blackLastMove;
-        this.view.showPreviousMove(lastMove);
-
-        // hide second last move in view
-        const secondLastMove = colour === "white" ? this.model.blackLastMove : this.model.whiteLastMove;
-        this.view.hidePreviousMove(secondLastMove);
+        this.view.showLastMove(this.model.lastMove);
     }
 
     changeActivePlayer(previous, current) {
@@ -195,61 +189,7 @@ export default class Controller {
         }
     }
 
-    movePieceBack(move, colour) {
-        const {startSpace, endSpace, firstMove, take} = move;
-        const lastPieceMoved = this.view.getPiece(endSpace);
-
-        // move piece in view from end space to start space
-        this.view.movePiece(lastPieceMoved, endSpace, startSpace);
-
-        // deselect the current last move in view
-        this.view.hidePreviousMove(move);
-
-        // if move was first move, revert image src in view
-        if (firstMove) {
-            this.view.undoFirstMove(lastPieceMoved);
-        }
-
-        // if move was take, remove piece taken and add to board at end space
-        if (take) {
-            this.updatePiecesTakenUndo(endSpace, colour);
-        }
-
-        // deselect current piece
-        this.deselectPiece();
-    }
-
     undoClicked() {
-        if (this.model.undoJustUsed || this.model.gameOver || !this.model.moveHasBeenMade) return;
-
-        // TODO - CHECK IF COMPUTER MOVE WAS TAKE
-        console.log(this.model.blackLastMove)
-
-        let turn = this.model.turn;
-
-        let lastMove;
-
-        if (turn === "white") {
-            if (this.model.blackLastMove.take) {
-                lastMove = this.model.blackLastMove;
-                turn = "black";
-            } else {
-                lastMove = this.model.whiteLastMove;
-                turn = "white";
-            }
-        }
-
-        this.movePieceBack(lastMove, turn);
-
-        lastMove = turn === "white" ? this.model.blackLastMove : this.model.whiteLastMove;
-
-        this.movePieceBack(lastMove, turn === "white" ? "black" : "white");
-
-        this.model.undoLastMove();
-
-        lastMove = turn === "white" ? this.model.blackLastMove : this.model.whiteLastMove;
-
-        this.view.showPreviousMove(lastMove);
     }
 
     infoClicked() {

@@ -34,8 +34,8 @@ class View {
         this.#overlay = this.#getElement("#overlay");
 
         // white and black pieces arrays
-        this.#whitePieces = [...this.#getAllElements(".white-piece")];
-        this.#blackPieces = [...this.#getAllElements(".black-piece")];
+        this.#whitePieces = [...this.#getAllElements(".white-piece", this.#board)];
+        this.#blackPieces = [...this.#getAllElements(".black-piece", this.#board)];
     }
 
     #getElement(selector, parentElement = document) {
@@ -46,8 +46,8 @@ class View {
             : parentElement.querySelector(selector);
     }
 
-    #getAllElements(selector) {
-        return document.querySelectorAll(selector);
+    #getAllElements(selector, parentElement = document) {
+        return parentElement.querySelectorAll(selector);
     }
 
     getRandomPiece(colour) {
@@ -90,35 +90,17 @@ class View {
         this.#addOverlay(space, validTakeIndicatorHTML);
     }
 
-    #removeOverlay(space, selector) {
-        const overlay = this.#getElement(selector, space);
+    #removeOverlay(space) {
+        const overlay = this.#getElement(".space-overlay", space);
 
         if (!overlay) return;
 
         space.removeChild(overlay);
     }
 
-    removeSelectedOverlay(space) {
-        if (!space) return;
-
-        this.#removeOverlay(space, ".space-overlay-selected");
-    }
-
-    removeValidMoveOverlay(space) {
-        if (!space) return;
-
-        this.#removeOverlay(space, ".space-overlay-possible-move");
-    }
-
-    removeValidTakeOverlay(space) {
-        if (!space) return;
-
-        this.#removeOverlay(space, ".space-overlay-possible-take");
-    }
-
-    removePossiblePositionsOverlay(space) {
-        this.removeValidMoveOverlay(space);
-        this.removeValidTakeOverlay(space);
+    removeAllOverlays() {
+        const allSpaces = this.#getAllElements(".space", this.#board);
+        allSpaces.forEach(space => this.#removeOverlay(space));
     }
 
     getSpaceFromCoordinates(x, y) {
@@ -147,23 +129,9 @@ class View {
         });
     }
 
-    hidePossibleMoves(possibleMoves) {
-        possibleMoves.forEach(move => {
-            const [x, y] = move.coordinates;
-            const space = this.getSpaceFromCoordinates(x, y);
-
-            this.removePossiblePositionsOverlay(space);
-        });
-    }
-
-    showPreviousMove(lastMove) {
+    showLastMove(lastMove) {
         this.addPieceSelectedOverlay(lastMove.startSpace);
         this.addPieceSelectedOverlay(lastMove.endSpace);
-    }
-
-    hidePreviousMove(lastMove) {
-        this.removeSelectedOverlay(lastMove.startSpace);
-        this.removeSelectedOverlay(lastMove.endSpace);
     }
 
     getPiece(space) {

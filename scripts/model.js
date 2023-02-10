@@ -4,111 +4,43 @@ class Model {
     #possibleMoves;
     #turn;
     #gameOver;
-    #piecesTaken = {};
-    #whiteLastMove = {};
-    #whiteSecondLastMove = {};
-    #blackLastMove = {};
-    #blackSecondLastMove = {};
+    #whiteMoves = [];
+    #blackMoves = [];
     #undoJustUsed;
-    #moveHasBeenMade;
 
     constructor() {
         this.#spaceSelected = null;
         this.#possibleMoves = [];
         this.#turn = "white";
         this.#gameOver = false;
-
-        this.#piecesTaken = {
-            white: 0,
-            black: 0
-        }
-
-        this.#initialiseLastMove(this.#whiteLastMove);
-        this.#initialiseLastMove(this.#blackLastMove);
-
-        this.#initialiseSecondLastMove(this.#whiteSecondLastMove);
-        this.#initialiseSecondLastMove(this.#blackSecondLastMove);
-
         this.#undoJustUsed = false;
-        this.#moveHasBeenMade = false;
     }
 
-    #initialiseLastMove(lastMove) {
-        lastMove.startSpace = null;
-        lastMove.endSpace = null;
-        lastMove.firstMove = false;
-        lastMove.take = false;
+    #getWhiteLastMove() {
+        return this.#whiteMoves.at(-1);
     }
 
-    #initialiseSecondLastMove(secondLastMove) {
-        secondLastMove.startSpace = null;
-        secondLastMove.endSpace = null;
+    #getBlackLastMove() {
+        return this.#blackMoves.at(-1);
     }
 
-    get whiteLastMove() {
-        return this.#whiteLastMove;
+    get lastMove() {
+        return this.#turn === "white" ? this.#getWhiteLastMove() : this.#getBlackLastMove();
     }
 
-    get blackLastMove() {
-        return this.#blackLastMove;
-    }
+    addMove(startSpace, endSpace, isFirstMove, pieceTaken) {
+        const move = {
+            startSpace,
+            endSpace,
+            isFirstMove,
+            pieceTaken
+        };
 
-    get whiteSecondLastMove() {
-        return this.#whiteSecondLastMove;
-    }
-
-    get blackSecondLastMove() {
-        return this.#blackSecondLastMove;
-    }
-
-    get moveHasBeenMade() {
-        return this.#moveHasBeenMade;
-    }
-
-    updateLastMove(startSpace, endSpace, firstMove, take) {
-        let lastMove, secondLastMove;
-
-        if (this.#turn === "white") {
-            lastMove = this.#whiteLastMove;
-            secondLastMove = this.#whiteSecondLastMove;
-        } else {
-            lastMove = this.#blackLastMove;
-            secondLastMove = this.#blackSecondLastMove;
-        }
-
-        secondLastMove.startSpace = lastMove.startSpace;
-        secondLastMove.endSpace = lastMove.endSpace;
-
-        lastMove.startSpace = startSpace;
-        lastMove.endSpace = endSpace;
-        lastMove.firstMove = firstMove;
-        lastMove.take = take;
-
-        this.#undoJustUsed = false;
-        this.#moveHasBeenMade = true;
-    }
-
-    #undoWhiteMove() {
-        this.#undoMove(this.#whiteLastMove, this.#whiteSecondLastMove);
-    }
-
-    #undoBlackMove() {
-        this.#undoMove(this.#blackLastMove, this.#blackSecondLastMove);
-    }
-
-    #undoMove(lastMove, secondLastMove) {
-        const {startSpace, endSpace} = secondLastMove;
-        lastMove.startSpace = startSpace;
-        lastMove.endSpace = endSpace;
-
-        this.#initialiseSecondLastMove(secondLastMove);
-        this.changeTurn();
-        this.#undoJustUsed = true;
+        const moves = this.#turn === "white" ? this.#whiteMoves : this.#blackMoves;
+        moves.push(move);
     }
 
     undoLastMove() {
-        this.#undoWhiteMove();
-        this.#undoBlackMove();
     }
 
     get undoJustUsed() {
@@ -124,27 +56,23 @@ class Model {
     }
 
     getWhitePiecesTaken() {
-        return this.#piecesTaken.white;
+        return this.#whiteMoves.reduce((taken, move) => {
+            if (move.pieceTaken) {
+                return taken + 1;
+            }
+
+            return taken;
+        }, 0);
     }
 
     getBlackPiecesTaken() {
-        return this.#piecesTaken.black;
-    }
+        return this.#blackMoves.reduce((taken, move) => {
+            if (move.pieceTaken) {
+                return taken + 1;
+            }
 
-    incrementWhitePiecesTaken() {
-        this.#piecesTaken.white++;
-    }
-
-    incrementBlackPiecesTaken() {
-        this.#piecesTaken.black++;
-    }
-
-    decrementWhitePiecesTaken() {
-        this.#piecesTaken.white--;
-    }
-
-    decrementBlackPiecesTaken() {
-        this.#piecesTaken.black--;
+            return taken;
+        }, 0);
     }
 
     generatePossibleMoves(colour, hasMoved, x, y) {
