@@ -71,8 +71,6 @@ export default class Controller1P extends Controller {
     moveComputerMedium() {
         if (this.model.gameOver) return;
 
-        this.moveComputerHard();
-
         const takeMove = this.getFirstTakeMove();
 
         if (takeMove) {
@@ -138,6 +136,7 @@ export default class Controller1P extends Controller {
     evaluateMove(piece, move) {
         const [x, y] = move.coordinates;
         if (this.colourCanWin("black", x, y)) {
+            console.log("black can win")
             return 250;
         }
 
@@ -236,7 +235,7 @@ export default class Controller1P extends Controller {
 
     colourCanWin(colour, x, y) {
         const boundary = colour === "white" ? 1 : 6;
-        return y === boundary;
+        return y >= boundary;
     }
 
     colourIsFree(colour, x, y) {
