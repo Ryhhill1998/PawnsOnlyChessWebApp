@@ -235,10 +235,6 @@ class View {
         return colour === "white" ? this.#whitePieces : this.#blackPieces;
     }
 
-    getPiecesFromBoard(board, colour) {
-        return [...this.#getAllElements("." + colour + "-piece", board)];
-    }
-
     instructionsAreOpen() {
         return !this.#instructions.classList.contains("no-display");
     }
