@@ -216,9 +216,7 @@ export default class Controller {
         }
     }
 
-    undoClicked() {
-        if (this.model.gameOver || !this.model.lastMove) return;
-
+    undoLastMove() {
         const {pieceMoved, startSpace, endSpace, isFirstMove, pieceTaken} = this.model.undoLastMove();
 
         this.movePiece(endSpace, startSpace, pieceMoved, "undo");
@@ -242,6 +240,12 @@ export default class Controller {
         if (lastMove) {
             this.view.showLastMove(lastMove);
         }
+    }
+
+    undoClicked() {
+        if (this.model.gameOver || !this.model.lastMove) return;
+
+        this.undoLastMove();
     }
 
     infoClicked() {
