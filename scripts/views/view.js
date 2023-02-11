@@ -39,15 +39,16 @@ class View {
     }
 
     #getElement(selector, parentElement = document) {
-        const identifier = selector[0];
-
-        return identifier === "#"
-            ? parentElement.getElementById(selector.slice(1))
-            : parentElement.querySelector(selector);
+        return parentElement.querySelector(selector);
     }
 
     #getAllElements(selector, parentElement = document) {
         return parentElement.querySelectorAll(selector);
+    }
+
+    cloneElement(selector, deep) {
+        const element = this.#getElement(selector);
+        return element.cloneNode(deep);
     }
 
     getRandomPiece(colour) {
@@ -232,6 +233,10 @@ class View {
 
     getPiecesArray(colour) {
         return colour === "white" ? this.#whitePieces : this.#blackPieces;
+    }
+
+    getPiecesFromBoard(board, colour) {
+        return [...this.#getAllElements("." + colour + "-piece", board)];
     }
 
     instructionsAreOpen() {

@@ -85,53 +85,82 @@ export default class Controller1P extends Controller {
     moveComputerHard() {
         if (this.model.gameOver) return;
 
-        const colour = this.model.turn;
+        const boardArray = this.getArrayRepresentationOfBoard();
+        console.log(boardArray)
+        console.log(this.stringifyBoardArray(boardArray));
+    }
 
-        let pieces = this.view.getPiecesArray(colour);
+    stringifyBoardArray(boardArray) {
+        let output = "";
 
-        pieces = this.removePiecesWithNoMoves(pieces);
+        for (let i = 0; i < 8; i++) {
+            output += "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n\n"
+            output += "| ";
+            for (let j = 0; j < 8; j++) {
+                const position = boardArray[i][j];
 
-        console.log(pieces);
+                if (position === " ") {
+                    output += position;
+                } else {
+                    output += position.symbol;
+                }
 
-        let bestMove = null;
+                output += " | ";
+            }
 
-        for (let i = 0; i < pieces.length; i++) {
-            const piece = pieces[i];
-            const colour = this.view.getPieceColour(piece);
-            const possibleMoves = this.getPossibleMovesForPiece(piece);
+            output += "\n";
 
-            for (let j = 0; j < possibleMoves.length; j++) {
-                const move = possibleMoves[j];
-                const moveValue = this.minimax(move, colour);
+            if (i === 7) {
+                output += "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
             }
         }
+
+        return output;
     }
 
-    removePiecesWithNoMoves(pieces) {
-        return pieces.filter(piece => this.getPossibleMovesForPiece(piece).length);
-    }
-
-    getPossibleMovesForPiece(piece) {
+    createPieceObjectFromPiece(piece) {
         const colour = this.view.getPieceColour(piece);
         const hasMoved = this.view.pieceHasMoved(piece);
-        const space = this.view.getSpaceFromPiece(piece);
-        const [x, y] = this.view.getCoordinatesFromSpace(space);
+        const symbol = colour === "white" ? "W" : "B";
 
-        const possibleMoves = this.model.generatePossibleMoves(colour, hasMoved, x, y);
-        return this.filterPossibleMoves(space, possibleMoves);
+        return {
+            colour,
+            hasMoved,
+            symbol
+        };
     }
 
-    minimax(move, colour) {
-        const multiplier = colour === "black" ? 1 : -1;
-        const blackPieces = this.view.getPiecesArray("black");
-        const whitePieces = this.view.getPiecesArray("white");
+    getArrayRepresentationOfBoard() {
+        const boardArray = [];
 
-        const blackScore = this.evaluatePositions(blackPieces);
-        const whiteScore = this.evaluatePositions(blackPieces);
+        for (let i = 0; i < 8; i++) {
+            const row = [];
+
+            for (let j = 0; j < 8; j++) {
+                const space = this.view.getSpaceFromCoordinates(j, i);
+                const piece = this.view.getPiece(space);
+
+                if (piece) {
+                    row.push(this.createPieceObjectFromPiece(piece));
+                } else {
+                    row.push(" ");
+                }
+            }
+
+            boardArray.push(row);
+        }
+
+        return boardArray;
+    }
+
+    minimax(pieceBeingMoved, move, colour, board) {
+
     }
 
     evaluatePositions(pieces) {
-        // loop through array and score each piece based on its position - return total
+        return pieces.reduce((total, piece) => {
+            return total + 1;
+        }, 0);
     }
 
     generateRandomComputerMove(colour) {
