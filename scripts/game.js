@@ -3,6 +3,7 @@ import Controller2P from "./controllers/controller2P.js";
 import Model from "./model.js";
 import View from "./views/view.js";
 
+const main = document.querySelector("main");
 const gameModePopUp = document.getElementById("game-mode");
 const levelSelectorPopUp = document.getElementById("level-selector");
 const overlay = document.getElementById("overlay");
@@ -19,6 +20,7 @@ const selectGameMode = ({target}) => {
     }
 
     gameModePopUp.classList.add("no-display");
+    main.classList.remove("no-display");
 }
 
 const selectLevel = ({target}) => {
