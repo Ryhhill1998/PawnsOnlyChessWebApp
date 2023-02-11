@@ -41,8 +41,8 @@ export default class Controller1P extends Controller {
         this.view.showLastMove(this.model.lastMove);
     }
 
-    moveComputerMedium() {
-        if (this.model.gameOver) return;
+    getAllTakeMoves() {
+        const takeMoves = [];
 
         const colour = this.model.turn;
 
@@ -61,12 +61,22 @@ export default class Controller1P extends Controller {
                 const possibleMove = filteredMoves[j];
                 if (possibleMove.type === "take") {
                     takeMove = this.formatMove(piece, space, possibleMove);
-                    break;
+                    takeMoves.push(takeMove);
                 }
             }
         }
 
-        if (takeMove) {
+        return takeMoves;
+    }
+
+    moveComputerMedium() {
+        if (this.model.gameOver) return;
+
+        const takeMoves = this.getAllTakeMoves();
+
+        if (takeMoves.length) {
+            this.chooseBestTakeMove(takeMoves);
+            const takeMove = takeMoves[0];
             const {pieceToMove, startSpace, endSpace} = takeMove;
             this.movePiece(startSpace, endSpace, pieceToMove);
             this.checkGameOver(endSpace);
@@ -85,7 +95,52 @@ export default class Controller1P extends Controller {
     moveComputerHard() {
         if (this.model.gameOver) return;
 
-        console.log(null);
+        const takeMoves = this.getAllTakeMoves();
+
+
+    }
+
+    chooseBestTakeMove(takeMoves) {
+        let chosenMove;
+        let bestScore = -Infinity;
+
+        for (let i = 0; i < takeMoves.length; i++) {
+            const move = takeMoves[i];
+            console.log(move)
+            let moveScore = 10;
+            const [x, y] = this.view.getCoordinatesFromSpace(move.endSpace);
+
+            if (this.whiteCanWin(y)) {
+                console.log("white can win!");
+                chosenMove = move;
+                break;
+            }
+
+            if (this.whiteCanTakeAfterMove(x, y)) {
+                console.log("white can take after move!");
+                moveScore -= 5;
+            }
+        }
+    }
+
+    whiteCanWin(y) {
+        return y === 1;
+    }
+
+    whiteCanTakeAfterMove(x, y) {
+        const newY = y + 1;
+
+        const leftTakePosition = this.view.getSpaceFromCoordinates(x - 1, newY);
+
+        let piece = this.view.getPiece(leftTakePosition);
+        if (piece && this.view.getPieceColour(piece) === "white") {
+            return true;
+        }
+
+        const rightTakePosition = this.view.getSpaceFromCoordinates(x + 1, newY);
+
+        piece = this.view.getPiece(rightTakePosition);
+        return piece && this.view.getPieceColour(piece) === "white";
     }
 
     generateRandomComputerMove(colour) {

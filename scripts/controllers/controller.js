@@ -62,10 +62,10 @@ export default class Controller {
         let isPossible = false;
 
         const space = this.view.getSpaceFromCoordinates(x, y);
-        const pieceImage = this.view.getPiece(space);
+        const piece = this.view.getPiece(space);
 
-        if (pieceImage) {
-            isPossible = this.view.getPieceColour(pieceImage) === colourToTake;
+        if (piece) {
+            isPossible = this.view.getPieceColour(piece) === colourToTake;
         }
 
         return isPossible;
