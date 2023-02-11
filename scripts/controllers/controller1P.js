@@ -41,13 +41,12 @@ export default class Controller1P extends Controller {
         this.view.showLastMove(this.model.lastMove);
     }
 
-    getAllTakeMoves() {
-        const takeMoves = [];
+    getFirstTakeMove() {
+        let takeMove = null;
 
         const colour = this.model.turn;
 
         const pieces = this.view.getPiecesArray(colour);
-        let takeMove = null;
 
         for (let i = 0; i < pieces.length; i++) {
             const piece = pieces[i];
@@ -61,22 +60,22 @@ export default class Controller1P extends Controller {
                 const possibleMove = filteredMoves[j];
                 if (possibleMove.type === "take") {
                     takeMove = this.formatMove(piece, space, possibleMove);
-                    takeMoves.push(takeMove);
+                    break;
                 }
             }
         }
 
-        return takeMoves;
+        return takeMove;
     }
 
     moveComputerMedium() {
         if (this.model.gameOver) return;
 
-        const takeMoves = this.getAllTakeMoves();
+        this.moveComputerHard();
 
-        if (takeMoves.length) {
-            this.chooseBestTakeMove(takeMoves);
-            const takeMove = takeMoves[0];
+        const takeMove = this.getFirstTakeMove();
+
+        if (takeMove) {
             const {pieceToMove, startSpace, endSpace} = takeMove;
             this.movePiece(startSpace, endSpace, pieceToMove);
             this.checkGameOver(endSpace);
@@ -95,52 +94,117 @@ export default class Controller1P extends Controller {
     moveComputerHard() {
         if (this.model.gameOver) return;
 
-        const takeMoves = this.getAllTakeMoves();
+        const pieces = this.view.getPiecesArray("black");
 
+        let bestMoveScore = -Infinity;
+        let bestMove = null;
 
+        pieces.forEach(piece => {
+            const possibleMoves = this.getPossibleMoves(piece);
+
+            possibleMoves.forEach(move => {
+                const moveScore = this.evaluateMove(piece, move);
+
+                if (moveScore > bestMoveScore) {
+                    bestMoveScore = moveScore;
+                    bestMove = move;
+                }
+            });
+        });
     }
 
-    chooseBestTakeMove(takeMoves) {
-        let chosenMove;
-        let bestScore = -Infinity;
+    getPossibleMoves(piece) {
+        const colour = this.view.getPieceColour(piece);
+        const hasMoved = this.view.pieceHasMoved(piece);
+        const space = this.view.getSpaceFromPiece(piece);
+        const [x, y] = this.view.getCoordinatesFromSpace(space);
+        const possibleMoves = this.model.generatePossibleMoves(colour, hasMoved, x, y);
+        return this.filterPossibleMoves(space, possibleMoves);
+    }
 
-        for (let i = 0; i < takeMoves.length; i++) {
-            const move = takeMoves[i];
-            console.log(move)
-            let moveScore = 10;
-            const [x, y] = this.view.getCoordinatesFromSpace(move.endSpace);
-
-            if (this.whiteCanWin(y)) {
-                console.log("white can win!");
-                chosenMove = move;
-                break;
-            }
-
-            if (this.whiteCanTakeAfterMove(x, y)) {
-                console.log("white can take after move!");
-                moveScore -= 5;
-            }
+    evaluateMove(piece, move) {
+        if (move.type === "standard") {
+            return this.evaluateStandardMove(move);
+        } else {
+            const direction = this.getTakeDirection(move.coordinates[0], piece);
+            return this.evaluateTakeMove(move, direction);
         }
+    }
+
+    evaluateTakeMove(move, direction) {
+        let score = 10;
+
+        const [x, y] = move.coordinates;
+
+        if (this.whiteCanWin(y)) {
+            console.log("white can win!");
+            return 100;
+        }
+
+        if (this.pieceBeCanTakenAfterMove("white", x, y)) {
+            console.log("white can take after move!");
+            score -= 5;
+        }
+
+        if (direction === "left") {
+            if (this.pieceIsLeftProtected("black", x, y)) {
+                console.log("black is left protected after take!");
+                score += 20;
+            }
+        } else if (this.pieceIsRightProtected("black", x, y)) {
+            console.log("black is right protected after take!");
+            score += 20;
+        }
+
+        return score;
+    }
+
+    getTakeDirection(newX, piece) {
+        const space = this.view.getSpaceFromPiece(piece);
+        const [x] = this.view.getCoordinatesFromSpace(space);
+        return x > newX ? "left" : "right";
+    }
+
+    evaluateStandardMove(move) {
+        return 0;
     }
 
     whiteCanWin(y) {
         return y === 1;
     }
 
-    whiteCanTakeAfterMove(x, y) {
+    pieceIsLeftProtected(colourMoved, x, y) {
+        const leftProtectedPosition = this.view.getSpaceFromCoordinates(x - 1, y - 1);
+
+        let piece = this.view.getPiece(leftProtectedPosition);
+        if (piece && this.view.getPieceColour(piece) === colourMoved) {
+            return true;
+        }
+    }
+
+    pieceIsRightProtected(colourMoved, x, y) {
+        const rightProtectedPosition = this.view.getSpaceFromCoordinates(x + 1,  y - 1);
+
+        let piece = this.view.getPiece(rightProtectedPosition);
+        if (piece && this.view.getPieceColour(piece) === colourMoved) {
+            return true;
+        }
+    }
+
+    pieceBeCanTakenAfterMove(opponentColour, x, y) {
         const newY = y + 1;
 
         const leftTakePosition = this.view.getSpaceFromCoordinates(x - 1, newY);
 
         let piece = this.view.getPiece(leftTakePosition);
-        if (piece && this.view.getPieceColour(piece) === "white") {
+        if (piece && this.view.getPieceColour(piece) === opponentColour) {
             return true;
         }
 
         const rightTakePosition = this.view.getSpaceFromCoordinates(x + 1, newY);
 
         piece = this.view.getPiece(rightTakePosition);
-        return piece && this.view.getPieceColour(piece) === "white";
+        return piece && this.view.getPieceColour(piece) === opponentColour;
     }
 
     generateRandomComputerMove(colour) {
