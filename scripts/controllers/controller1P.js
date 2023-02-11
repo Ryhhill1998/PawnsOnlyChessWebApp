@@ -107,10 +107,21 @@ export default class Controller1P extends Controller {
 
                 if (moveScore > bestMoveScore) {
                     bestMoveScore = moveScore;
-                    bestMove = move;
+                    const space = this.view.getSpaceFromPiece(piece);
+                    bestMove = this.formatMove(piece, space, move);
                 }
             });
         });
+
+        const {pieceToMove, startSpace, endSpace} = bestMove;
+        this.movePiece(startSpace, endSpace, pieceToMove);
+        this.checkGameOver(endSpace);
+
+        // remove all overlays
+        this.deselectPiece();
+
+        // show last move in view
+        this.view.showLastMove(this.model.lastMove);
     }
 
     getPossibleMoves(piece) {
@@ -124,7 +135,8 @@ export default class Controller1P extends Controller {
 
     evaluateMove(piece, move) {
         if (move.type === "standard") {
-            return this.evaluateStandardMove(move);
+            const colour = this.view.getPieceColour(piece);
+            return this.evaluateStandardMove(move, colour);
         } else {
             const direction = this.getTakeDirection(move.coordinates[0], piece);
             return this.evaluateTakeMove(move, direction);
@@ -132,7 +144,7 @@ export default class Controller1P extends Controller {
     }
 
     evaluateTakeMove(move, direction) {
-        let score = 10;
+        let score = 20;
 
         const [x, y] = move.coordinates;
 
@@ -165,8 +177,48 @@ export default class Controller1P extends Controller {
         return x > newX ? "left" : "right";
     }
 
-    evaluateStandardMove(move) {
-        return 0;
+    evaluateStandardMove(move, colour) {
+        console.log(move);
+        let score = 5;
+        const [x, y] = move.coordinates;
+
+        if (this.pieceBeCanTakenAfterMove("white", x, y)) {
+            console.log("piece can be taken after move");
+            score -= 10;
+        }
+
+        if (this.pieceIsLeftProtected(colour, x, y)) {
+            console.log("piece is left protected after move");
+            score += 10;
+        }
+
+        if (this.pieceIsRightProtected(colour, x, y)) {
+            console.log("piece is right protected after move");
+            score += 10;
+        }
+
+        if (this.moveProtectsPiece(x, y, colour)) {
+            console.log("move protects piece");
+            score += 5;
+        }
+
+        console.log("\n");
+
+        return score;
+    }
+
+    moveProtectsPiece(x, y, colour) {
+        const lefDiagonal = this.view.getSpaceFromCoordinates(x - 1, y + 1);
+
+        let piece = this.view.getPiece(lefDiagonal);
+        if (piece && this.view.getPieceColour(piece) === colour) {
+            return true;
+        }
+
+        const rightDiagonal = this.view.getSpaceFromCoordinates(x + 1, y + 1);
+
+        piece = this.view.getPiece(rightDiagonal);
+        return piece && this.view.getPieceColour(piece) === colour;
     }
 
     whiteCanWin(y) {
@@ -176,7 +228,7 @@ export default class Controller1P extends Controller {
     pieceIsLeftProtected(colourMoved, x, y) {
         const leftProtectedPosition = this.view.getSpaceFromCoordinates(x - 1, y - 1);
 
-        let piece = this.view.getPiece(leftProtectedPosition);
+        const piece = this.view.getPiece(leftProtectedPosition);
         if (piece && this.view.getPieceColour(piece) === colourMoved) {
             return true;
         }
