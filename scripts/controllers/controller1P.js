@@ -94,7 +94,11 @@ export default class Controller1P extends Controller {
             let possibleMoves = this.model.generatePossibleMoves(colour, hasMoved, x, y);
             possibleMoves = this.filterMoves(possibleMoves, boardArray, colour);
 
-            possibleMoves.forEach(move => this.minimax(piece, move, boardArray));
+            possibleMoves.forEach(move => {
+                const boardCopy = this.deepCopyBoardArray(boardArray);
+                this.makeMove(piece, move, boardCopy);
+                const moveValue = this.minimax(boardCopy, colour, true, 0);
+            });
         });
     }
 
@@ -226,17 +230,42 @@ export default class Controller1P extends Controller {
         return boardArrayCopy;
     }
 
-    minimax(pieceBeingMoved, move, board) {
-        const boardCopy = this.deepCopyBoardArray(board);
-        const {x, y} = pieceBeingMoved;
-        const [newX, newY] = move.coordinates;
-        this.makeMove(pieceBeingMoved, x, y, newX, newY, boardCopy);
-        console.log(this.stringifyBoardArray(board));
+
+
+    minimax(board, colour, maximising, movesMade) {
+        if (movesMade === 5) {
+            return this.evaluateBoard(board, maximising);
+        }
+
+        const pieces = this.getPiecesFromBoardArray(colour, board);
+
+        pieces.forEach(piece => {
+            const {colour, hasMoved, x, y} = piece;
+            let possibleMoves = this.model.generatePossibleMoves(colour, hasMoved, x, y);
+            possibleMoves = this.filterMoves(possibleMoves, board, colour);
+
+            possibleMoves.forEach(move => {
+                const boardCopy = this.deepCopyBoardArray(board);
+                this.makeMove(piece, move, boardCopy);
+                const newColour = colour === "white" ? "black" : "white";
+                const moveValue = this.minimax(boardCopy, newColour, !maximising, movesMade + 1);
+            });
+        });
     }
 
-    makeMove(pieceBeingMoved, x, y, newX, newY, board) {
+    makeMove(pieceBeingMoved, move, board) {
+        const {x, y} = pieceBeingMoved;
+        const [newX, newY] = move.coordinates;
         board[newY][newX] = pieceBeingMoved;
         board[y][x] = " ";
+    }
+
+    evaluateBoard(board, maximising) {
+        const blackPieces = this.getPiecesFromBoardArray("black", board);
+        const whitePieces = this.getPiecesFromBoardArray("white", board);
+        const multiplier = maximising ? 1 : -1;
+
+        return multiplier * (this.evaluatePositions(blackPieces) - this.evaluatePositions(whitePieces));
     }
 
     evaluatePositions(pieces) {
