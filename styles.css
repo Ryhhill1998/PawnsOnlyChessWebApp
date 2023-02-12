@@ -59,17 +59,13 @@ main {
     padding: 0.15em 0;
 }
 
-.player-info > img {
+.player-icon {
     background-color: white;
     border-radius: 8px;
     padding: 0.5em;
 }
 
-.player-info.winner > img {
-    background-color: #FAC213;
-}
-
-.player-info.winner > img {
+.winner > .player-icon {
     background-color: #FAC213;
 }
 
@@ -162,6 +158,7 @@ button i {
 /* GENERAL POPUP */
 .pop-up {
     position: absolute;
+    width: 400px;
     background-color: #222222;
     color: lightgrey;
     left: 0;
@@ -174,10 +171,6 @@ button i {
 }
 
 /* INSTRUCTIONS */
-.instructions {
-    width: 400px;
-}
-
 .instructions > div:first-child {
     position: relative;
 }
@@ -242,6 +235,7 @@ hr {
 /* GAME MODE POPUP */
 .game-mode {
     height: 100%;
+    width: fit-content;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -287,7 +281,6 @@ hr {
 
 /* LEVEL SELECTOR */
 .level-selector {
-    width: 400px;
     height: 500px;
     display: flex;
     flex-direction: column;
@@ -329,6 +322,29 @@ hr {
     color: black;
 }
 
+/* GAME OVER POPUP */
+.game-over {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: solid 2px white;
+    height: 500px;
+    gap: 2em;
+}
+
+.player-icons {
+    display: flex;
+    gap: 2em;
+}
+
+.play-again {
+    color: #3A8891;
+    font-family: inherit;
+    border: solid 2px #3A8891;
+    padding: 2em;
+    border-radius: 8px;
+}
+
 .no-display {
     display: none;
 }
@@ -344,6 +360,10 @@ hr {
     .space {
         height: 40px;
         width: 40px;
+    }
+
+    .instructions {
+
     }
 }
 
