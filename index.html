@@ -15,7 +15,7 @@
 </head>
 <body>
 
-<div id="game-mode" class="pop-up game-mode no-display">
+<div id="game-mode" class="pop-up game-mode">
     <div class="welcome">
         <h2>Welcome to</h2>
         <h1>Pawns Only Chess</h1>
@@ -30,7 +30,7 @@
     <button id="info-button"><i class="fas fa-info-circle fa-2x"></i></button>
 </header>
 
-<main class="">
+<main class="no-display">
     <div id="level-selector" class="pop-up level-selector no-display">
         <h2>Choose your level</h2>
         <button id="easy" class="easy">Easy <i class="fas fa-smile"></i></button>
@@ -38,14 +38,18 @@
         <button id="hard" class="hard">Hard <i class="fas fa-frown"></i></button>
     </div>
 
-    <div id="game-over" class="pop-up game-over">
+    <div id="game-over" class="pop-up game-over no-display">
         <h2>You Win!</h2>
         <div class="player-icons">
             <div class="player-one winner">
+                <h3>Player 1</h3>
+
                 <img class="player-icon" src="pieces/black/pawn.svg" alt="">
             </div>
 
             <div class="player-two">
+                <h3>Player 2</h3>
+
                 <img class="player-icon" src="pieces/white/pawn.svg" alt="">
             </div>
         </div>

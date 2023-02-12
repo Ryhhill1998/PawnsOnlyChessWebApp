@@ -165,8 +165,8 @@ button i {
     right: 0;
     z-index: 30;
     border-radius: 8px;
-    margin: 0 auto;
-    padding: 1.5em 2em;
+    margin: 2em auto 0;
+    padding: 2em;
     text-align: center;
 }
 
@@ -234,12 +234,11 @@ hr {
 
 /* GAME MODE POPUP */
 .game-mode {
-    height: 100%;
-    width: fit-content;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 5em;
+    margin-top: 0;
 }
 
 .game-mode .welcome {
@@ -281,7 +280,6 @@ hr {
 
 /* LEVEL SELECTOR */
 .level-selector {
-    height: 500px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -324,16 +322,22 @@ hr {
 
 /* GAME OVER POPUP */
 .game-over {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     border: solid 2px white;
-    height: 500px;
-    gap: 2em;
+    text-align: center;
+    margin-top: 5em;
+}
+
+.game-over h2, .game-over .player-icon {
+    margin-bottom: 2em;
+}
+
+.game-over h3 {
+    margin-bottom: 1em;
 }
 
 .player-icons {
     display: flex;
+    justify-content: center;
     gap: 2em;
 }
 
@@ -353,6 +357,10 @@ hr {
     .space {
         height: 45px;
         width: 45px;
+    }
+
+    .pop-up {
+        width: 360px;
     }
 }
 
