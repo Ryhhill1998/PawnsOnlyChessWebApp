@@ -111,8 +111,6 @@ export default class Controller1P extends Controller {
             });
         });
 
-        console.log(bestMoveScore)
-
         const {pieceToMove, startSpace, endSpace} = bestMove;
         this.movePiece(startSpace, endSpace, pieceToMove);
         this.checkGameOver(endSpace);
@@ -136,12 +134,7 @@ export default class Controller1P extends Controller {
     evaluateMove(piece, move) {
         const [x, y] = move.coordinates;
         if (this.colourCanWin("black", x, y)) {
-            console.log("black can win")
             return 250;
-        }
-
-        if (this.colourIsFree("black", x, y)) {
-            return 200 - 20 * (6 - y);
         }
 
         if (move.type === "standard") {
@@ -160,18 +153,23 @@ export default class Controller1P extends Controller {
 
         score += y * 5;
 
-        if (this.colourCanWin("white", x, y)) {
-            return 200;
+        if (x === 3 || x === 4) {
+            score += 5;
+        } else if (x === 2 || x === 5) {
+            score += 3;
+        } else if (x === 1 || x === 6) {
+            score += 2;
+        } else {
+            score += 1;
         }
 
-        if (this.colourIsFree("white", x, y)) {
-            return 200 - 20 * (y - 1);
+        if (this.colourCanWin("white", x, y)) {
+            return 200;
         }
 
         if (this.pieceBeCanTakenAfterMove("white", x, y)) {
             score -= 10;
         } else {
-            console.log("piece cannot be taken after move")
             score += 50;
         }
 
@@ -197,6 +195,16 @@ export default class Controller1P extends Controller {
         const [x, y] = move.coordinates;
         score += y * 5;
 
+        if (x === 3 || x === 4) {
+            score += 5;
+        } else if (x === 2 || x === 5) {
+            score += 3;
+        } else if (x === 1 || x === 6) {
+            score += 2;
+        } else {
+            score += 1;
+        }
+
         if (this.pieceBeCanTakenAfterMove("white", x, y)) {
             score -= 10;
         }
@@ -210,11 +218,8 @@ export default class Controller1P extends Controller {
         }
 
         if (this.moveProtectsPiece(x, y, colour)) {
-            console.log("move protects piece");
             score += 5;
         }
-
-        console.log("\n");
 
         return score;
     }
@@ -236,10 +241,6 @@ export default class Controller1P extends Controller {
     colourCanWin(colour, x, y) {
         const boundary = colour === "white" ? 1 : 6;
         return y >= boundary;
-    }
-
-    colourIsFree(colour, x, y) {
-        return false;
     }
 
     pieceIsLeftProtected(colourMoved, x, y) {
