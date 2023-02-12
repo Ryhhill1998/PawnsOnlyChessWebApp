@@ -333,14 +333,23 @@ hr {
     display: none;
 }
 
-@media (max-height: 680px) {
-    .board {
-        margin: 0.5em auto;
-    }
-
+@media (max-width: 400px) {
     .space {
         height: 45px;
         width: 45px;
+    }
+}
+
+@media (max-width: 380px) {
+    .space {
+        height: 40px;
+        width: 40px;
+    }
+}
+
+@media (max-height: 680px) {
+    .board {
+        margin: 0.5em auto;
     }
 
     .player-info {
