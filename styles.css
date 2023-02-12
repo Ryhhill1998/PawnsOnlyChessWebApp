@@ -40,7 +40,7 @@ main {
     background-color: #73777B;
     border-radius: 8px;
     border: solid 2px #73777B;
-    padding: 0.75em;
+    padding: 0.7em;
     color: white;
 }
 
@@ -56,7 +56,7 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 0.25em 0;
+    padding: 0.15em 0;
 }
 
 .player-info > img {
@@ -103,7 +103,7 @@ button i {
 .board {
     border-radius: 8px;
     overflow: hidden;
-    margin: 1em auto;
+    margin: 0.75em auto;
 }
 
 .row {
@@ -331,4 +331,32 @@ hr {
 
 .no-display {
     display: none;
+}
+
+@media (max-height: 680px) {
+    .board {
+        margin: 0.5em auto;
+    }
+
+    .space {
+        height: 45px;
+        width: 45px;
+    }
+
+    .player-info {
+        padding: 0.5em;
+    }
+
+    .player-info > div {
+        padding: 0;
+    }
+
+    .player-info > img {
+        padding: 0.25em;
+        width: 50px;
+    }
+
+    .pieces-taken img {
+        width: 20px;
+    }
 }
