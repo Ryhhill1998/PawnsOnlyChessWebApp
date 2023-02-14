@@ -343,6 +343,10 @@ hr {
     font-weight: normal;
 }
 
+.game-over .winner h3 {
+    color: #FAC213;
+}
+
 .player-icons {
     display: flex;
     justify-content: center;
@@ -359,6 +363,10 @@ hr {
     font-size: 1rem;
     border-radius: 8px;
     letter-spacing: 0.1em;
+}
+
+.play-again:hover {
+    background-color: #4fafb9;
 }
 
 .play-again i {
