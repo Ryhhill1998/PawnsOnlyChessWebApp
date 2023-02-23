@@ -153,12 +153,13 @@ export default class Controller {
         if (gameOver) {
             this.view.displayWinner(turn);
         } else {
-            this.changeTurn();
             if (!this.moveIsPossible()) {
                 this.model.gameOver = true;
                 console.log("STALEMATE!");
             }
         }
+
+        this.changeTurn();
     }
 
     moveIsPossible() {
