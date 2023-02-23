@@ -36,6 +36,8 @@ export default class Controller1P extends Controller {
 
         // remove all overlays
         this.deselectPiece();
+
+        this.showLastMove();
     }
 
     getFirstTakeMove() {
@@ -78,6 +80,8 @@ export default class Controller1P extends Controller {
             // remove all overlays
             this.deselectPiece();
 
+            this.showLastMove();
+
         } else {
             this.moveComputerEasy();
         }
@@ -111,6 +115,8 @@ export default class Controller1P extends Controller {
 
         // remove all overlays
         this.deselectPiece();
+
+        this.showLastMove();
     }
 
     getPossibleMoves(piece) {
