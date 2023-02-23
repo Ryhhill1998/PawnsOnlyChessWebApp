@@ -10,6 +10,7 @@ export default class Controller {
     deselectPiece() {
         this.view.removeAllOverlays();
         this.model.spaceSelected = null;
+        this.showLastMove();
     }
 
     selectPiece(space, piece) {
@@ -33,6 +34,13 @@ export default class Controller {
 
         // show possible moves in view
         this.view.showPossibleMoves(this.model.possibleMoves);
+    }
+
+    showLastMove() {
+        const lastMove = this.model.lastMove;
+        if (lastMove) this.view.showLastMove(lastMove);
+
+        console.log("showing last move");
     }
 
     filterPossibleMoves(space, possibleMoves) {
@@ -201,9 +209,6 @@ export default class Controller {
             // remove all overlays
             this.deselectPiece();
 
-            // show last move in view
-            this.view.showLastMove(this.model.lastMove);
-
             // if game type is 1P and game is not over, make computer move
             if (!this.model.gameOver && this.type === "1P") {
                 this.moveComputer();
@@ -233,13 +238,6 @@ export default class Controller {
         this.deselectPiece();
 
         this.changeTurn();
-
-        // show last move in view
-        const lastMove = this.model.lastMove;
-
-        if (lastMove) {
-            this.view.showLastMove(lastMove);
-        }
     }
 
     undoClicked() {

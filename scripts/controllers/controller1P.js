@@ -36,9 +36,6 @@ export default class Controller1P extends Controller {
 
         // remove all overlays
         this.deselectPiece();
-
-        // show last move in view
-        this.view.showLastMove(this.model.lastMove);
     }
 
     getFirstTakeMove() {
@@ -81,9 +78,6 @@ export default class Controller1P extends Controller {
             // remove all overlays
             this.deselectPiece();
 
-            // show last move in view
-            this.view.showLastMove(this.model.lastMove);
-
         } else {
             this.moveComputerEasy();
         }
@@ -117,9 +111,6 @@ export default class Controller1P extends Controller {
 
         // remove all overlays
         this.deselectPiece();
-
-        // show last move in view
-        this.view.showLastMove(this.model.lastMove);
     }
 
     getPossibleMoves(piece) {
