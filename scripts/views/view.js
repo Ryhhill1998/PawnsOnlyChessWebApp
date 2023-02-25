@@ -15,6 +15,7 @@ class View {
     #overlay;
     #whitePieces;
     #blackPieces;
+    #gameOver
 
     constructor() {
         // board
@@ -36,6 +37,9 @@ class View {
         // white and black pieces arrays
         this.#whitePieces = [...this.#getAllElements(".white-piece", this.#board)];
         this.#blackPieces = [...this.#getAllElements(".black-piece", this.#board)];
+
+        // game over popup
+        this.#gameOver = this.#getElement("#game-over");
     }
 
     #getElement(selector, parentElement = document) {
@@ -44,11 +48,6 @@ class View {
 
     #getAllElements(selector, parentElement = document) {
         return parentElement.querySelectorAll(selector);
-    }
-
-    cloneElement(selector, deep) {
-        const element = this.#getElement(selector);
-        return element.cloneNode(deep);
     }
 
     getRandomPiece(colour) {
@@ -253,6 +252,18 @@ class View {
 
     hideOverlay() {
         this.#overlay.classList.add('no-display');
+    }
+
+    showGameOverPopUp() {
+        this.#gameOver.classList.remove("no-display");
+    }
+
+    hideGameOverPopUp() {
+        this.#gameOver.classList.add("no-display");
+    }
+
+    gameOverIsBeingDisplayed() {
+        return !this.#gameOver.classList.contains("no-display");
     }
 
     addSpaceClickedEventListener(handler) {

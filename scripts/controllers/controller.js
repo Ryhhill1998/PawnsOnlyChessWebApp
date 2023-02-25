@@ -144,11 +144,13 @@ export default class Controller {
 
         if (gameOver) {
             this.view.displayWinner(turn);
+            this.showGameOver();
         } else {
             this.changeTurn();
             if (!this.moveIsPossible()) {
                 this.model.gameOver = true;
                 console.log("STALEMATE!");
+                this.showGameOver();
             }
         }
     }
@@ -262,10 +264,23 @@ export default class Controller {
 
     overlayClicked() {
         this.#hideInstructionsAndOverlay();
+        this.#hideGameOverAndOverlay();
     }
 
     closeInstructionsButtonClicked() {
         this.#hideInstructionsAndOverlay();
+    }
+
+    showGameOver() {
+        this.view.showGameOverPopUp();
+        this.view.showOverlay();
+    }
+
+    #hideGameOverAndOverlay() {
+        if (!this.view.gameOverIsBeingDisplayed()) return;
+
+        this.view.hideGameOverPopUp();
+        this.view.hideOverlay();
     }
 
     init() {
