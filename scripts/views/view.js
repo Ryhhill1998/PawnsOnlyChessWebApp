@@ -158,9 +158,13 @@ class View {
     }
 
     displayWinner(winner) {
-        const winnerInfo = winner === "white" ? this.#whitePlayerInfo : this.#blackPlayerInfo;
+        let winnerIcon;
 
-        this.#addClassToElement(winnerInfo, "winner");
+        if (winner === "white") {
+            this.#getElement(".white-icon", this.#gameOver).classList.add("winner");
+        } else {
+            this.#getElement(".black-icon", this.#gameOver).classList.add("winner");
+        }
     }
 
     displayActivePlayer(player) {
