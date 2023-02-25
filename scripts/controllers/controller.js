@@ -19,8 +19,6 @@ export default class Controller {
 
         this.deselectPiece();
 
-        this.showLastMove();
-
         this.model.spaceSelected = space;
 
         // set possible moves
@@ -35,6 +33,8 @@ export default class Controller {
 
         // show possible moves in view
         this.view.showPossibleMoves(this.model.possibleMoves);
+
+        this.showLastMove();
     }
 
     showLastMove() {

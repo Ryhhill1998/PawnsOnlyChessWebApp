@@ -46,11 +46,6 @@ class View {
         return parentElement.querySelectorAll(selector);
     }
 
-    cloneElement(selector, deep) {
-        const element = this.#getElement(selector);
-        return element.cloneNode(deep);
-    }
-
     getRandomPiece(colour) {
         const piecesArray = colour === "white" ? this.#whitePieces : this.#blackPieces;
         const randomIndex = Math.floor(Math.random() * piecesArray.length);
@@ -92,11 +87,8 @@ class View {
     }
 
     #removeOverlay(space) {
-        const overlay = this.#getElement(".space-overlay", space);
-
-        if (!overlay) return;
-
-        space.removeChild(overlay);
+        const overlays = this.#getAllElements(".space-overlay", space);
+        overlays.forEach(overlay => space.removeChild(overlay));
     }
 
     removeAllOverlays() {
