@@ -144,13 +144,20 @@ export default class Controller {
 
         if (gameOver) {
             this.view.displayWinner(turn);
-            this.showGameOver();
+            let feedback;
+
+            if (turn === "white") {
+                feedback = "You win!";
+            } else {
+                feedback = "You lose!";
+            }
+
+            this.showGameOver(feedback);
         } else {
             this.changeTurn();
             if (!this.moveIsPossible()) {
                 this.model.gameOver = true;
-                console.log("STALEMATE!");
-                this.showGameOver();
+                this.showGameOver("Stalemate");
             }
         }
     }
@@ -271,7 +278,8 @@ export default class Controller {
         this.#hideInstructionsAndOverlay();
     }
 
-    showGameOver() {
+    showGameOver(feedback) {
+        this.view.addGameOverFeedback(feedback);
         this.view.showGameOverPopUp();
         this.view.showOverlay();
     }

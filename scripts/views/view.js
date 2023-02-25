@@ -254,6 +254,11 @@ class View {
         this.#overlay.classList.add('no-display');
     }
 
+    addGameOverFeedback(feedback) {
+        const feedbackElement = this.#getElement("h2", this.#gameOver);
+        feedbackElement.innerHTML = feedback;
+    }
+
     showGameOverPopUp() {
         this.#gameOver.classList.remove("no-display");
     }
