@@ -38,6 +38,24 @@
         <button id="hard" class="hard">Hard <i class="fas fa-frown"></i></button>
     </div>
 
+    <div id="game-over" class="pop-up game-over no-display">
+        <h2>You Win!</h2>
+        <div class="player-icons">
+            <div class="icon-container black-icon">
+                <h3>Player 1</h3>
+
+                <img class="player-icon" src="pieces/black/pawn.svg" alt="">
+            </div>
+
+            <div class="icon-container white-icon">
+                <h3>Player 2</h3>
+
+                <img class="player-icon" src="pieces/white/pawn.svg" alt="">
+            </div>
+        </div>
+        <button id="play-again" class="play-again">Replay <i class="fas fa-undo-alt"></i></button>
+    </div>
+
     <div id="instructions" class="pop-up instructions no-display">
         <div>
             <h2>How to Play</h2>
@@ -90,7 +108,7 @@
 
     <div class="game-container">
         <div id="black-player-info" class="player-info">
-            <img src="pieces/black/pawn.svg" alt="">
+            <img class="player-icon" src="pieces/black/pawn.svg" alt="">
 
             <div>
                 <p>Black</p>
@@ -192,7 +210,7 @@
         </div>
 
         <div id="white-player-info" class="player-info active">
-            <img src="pieces/white/pawn.svg" alt="">
+            <img class="player-icon" src="pieces/white/pawn.svg" alt="">
 
             <div>
                 <p>White</p>

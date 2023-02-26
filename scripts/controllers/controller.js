@@ -151,10 +151,20 @@ export default class Controller {
 
         if (gameOver) {
             this.view.displayWinner(turn);
+
+            let feedback;
+
+            if (this.type === "2P" || turn === "white") {
+                feedback = "You win!";
+            } else {
+                feedback = "You lose!";
+            }
+
+            this.showGameOver(feedback);
         } else {
             if (!this.moveIsPossible()) {
                 this.model.gameOver = true;
-                console.log("STALEMATE!");
+                this.showGameOver("Stalemate");
             }
         }
 
@@ -265,10 +275,30 @@ export default class Controller {
 
     overlayClicked() {
         this.#hideInstructionsAndOverlay();
+        this.#hideGameOverAndOverlay();
     }
 
     closeInstructionsButtonClicked() {
         this.#hideInstructionsAndOverlay();
+    }
+
+    showGameOver(feedback) {
+        this.view.addGameOverFeedback(feedback);
+        this.view.showGameOverPopUp();
+        this.view.showOverlay();
+    }
+
+    #hideGameOverAndOverlay() {
+        if (!this.view.gameOverIsBeingDisplayed()) return;
+
+        this.view.hideGameOverPopUp();
+        this.view.hideOverlay();
+    }
+
+    resetGame() {
+        this.#hideGameOverAndOverlay();
+        this.view.resetGame();
+        this.model.resetGame();
     }
 
     init() {
@@ -277,5 +307,6 @@ export default class Controller {
         this.view.addInfoClickedEventListener(this.infoClicked.bind(this));
         this.view.addOverlayClickedEventListener(this.overlayClicked.bind(this));
         this.view.addCloseInstructionsButtonClickedEventListener(this.closeInstructionsButtonClicked.bind(this));
+        this.view.addPlayAgainButtonClickedEventListener(this.resetGame.bind(this));
     }
 }

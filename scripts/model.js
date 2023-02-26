@@ -4,14 +4,20 @@ class Model {
     #possibleMoves;
     #turn;
     #gameOver;
-    #whiteMoves = [];
-    #blackMoves = [];
+    #whiteMoves;
+    #blackMoves;
 
     constructor() {
+        this.#init();
+    }
+
+    #init() {
         this.#spaceSelected = null;
         this.#possibleMoves = [];
         this.#turn = "white";
         this.#gameOver = false;
+        this.#whiteMoves = [];
+        this.#blackMoves = [];
     }
 
     #getWhiteLastMove() {
@@ -188,6 +194,10 @@ class Model {
 
     set gameOver(value) {
         this.#gameOver = value;
+    }
+
+    resetGame() {
+        this.#init();
     }
 }
 

@@ -3,6 +3,9 @@ const pieceSelectedHTML = `<div class="space-overlay space-overlay-selected"></d
 const validMoveIndicatorHTML = `<div class="space-overlay space-overlay-possible-move"></div>`;
 const validTakeIndicatorHTML = `<div class="space-overlay space-overlay-possible-take"></div>`;
 
+const blackPieceHTML = `<img class="black-piece" src="pieces/black/pawn.svg" alt="">`;
+const whitePieceHTML = `<img class="white-piece" src="pieces/white/pawn.svg" alt="">`;
+
 class View {
 
     #board;
@@ -15,15 +18,10 @@ class View {
     #overlay;
     #whitePieces;
     #blackPieces;
+    #gameOver;
+    #playAgainButton;
 
     constructor() {
-        // board
-        this.#board = this.#getElement("#board");
-
-        // player info sections
-        this.#blackPlayerInfo = this.#getElement("#black-player-info");
-        this.#whitePlayerInfo = this.#getElement("#white-player-info");
-
         // buttons in header
         this.#undoButton = this.#getElement("#undo-button");
         this.#infoButton = this.#getElement("#info-button");
@@ -32,6 +30,21 @@ class View {
         this.#instructions = this.#getElement("#instructions");
         this.#closeInstructionsButton = this.#getElement("#close-instructions-button");
         this.#overlay = this.#getElement("#overlay");
+
+        // game over popup
+        this.#gameOver = this.#getElement("#game-over");
+        this.#playAgainButton = this.#getElement("#play-again", this.#gameOver);
+
+        this.#init();
+    }
+
+    #init() {
+        // board
+        this.#board = this.#getElement("#board");
+
+        // player info sections
+        this.#blackPlayerInfo = this.#getElement("#black-player-info");
+        this.#whitePlayerInfo = this.#getElement("#white-player-info");
 
         // white and black pieces arrays
         this.#whitePieces = [...this.#getAllElements(".white-piece", this.#board)];
@@ -151,9 +164,15 @@ class View {
     }
 
     displayWinner(winner) {
-        const winnerInfo = winner === "white" ? this.#whitePlayerInfo : this.#blackPlayerInfo;
+        let winnerIcon;
 
-        this.#addClassToElement(winnerInfo, "winner");
+        if (winner === "white") {
+            winnerIcon = this.#getElement(".white-icon", this.#gameOver);
+        } else {
+            winnerIcon = this.#getElement(".black-icon", this.#gameOver);
+        }
+
+        winnerIcon.classList.add("winner");
     }
 
     displayActivePlayer(player) {
@@ -223,6 +242,49 @@ class View {
         piece.setAttribute("src", pieceImageSrc);
     }
 
+    #removeAllPieces() {
+        const spaces = this.#getAllElements(".space");
+
+        spaces.forEach(space => space.innerHTML = "");
+    }
+
+    #removeAllPiecesTaken() {
+        const piecesTakenContainers = this.#getAllElements(".pieces-taken");
+
+        piecesTakenContainers.forEach(container => {
+            this.#getElement(".pieces", container).innerHTML = "";
+            this.#getElement(".additional-pieces", container).innerHTML = "";
+        });
+    }
+
+    #resetAllPieces() {
+        for (let i = 0; i < 2; i++) {
+            const row = this.#getElement("#row-" + i);
+            const spaces = this.#getAllElements(".space", row);
+            spaces.forEach(space => space.innerHTML = blackPieceHTML);
+        }
+
+        for (let i = 6; i < 8; i++) {
+            const row = this.#getElement("#row-" + i);
+            const spaces = this.#getAllElements(".space", row);
+            spaces.forEach(space => space.innerHTML = whitePieceHTML);
+        }
+    }
+
+    #removeWinnerIndicator() {
+        const iconContainers = this.#getAllElements(".icon-container");
+        iconContainers.forEach(container => container.classList.remove("winner"));
+    }
+
+    resetGame() {
+        this.#removeAllPieces();
+        this.#removeAllPiecesTaken();
+        this.removeAllOverlays();
+        this.#resetAllPieces();
+        this.#removeWinnerIndicator();
+        this.#init();
+    }
+
     getPiecesArray(colour) {
         return colour === "white" ? this.#whitePieces : this.#blackPieces;
     }
@@ -247,6 +309,23 @@ class View {
         this.#overlay.classList.add('no-display');
     }
 
+    addGameOverFeedback(feedback) {
+        const feedbackElement = this.#getElement("h2", this.#gameOver);
+        feedbackElement.innerHTML = feedback;
+    }
+
+    showGameOverPopUp() {
+        this.#gameOver.classList.remove("no-display");
+    }
+
+    hideGameOverPopUp() {
+        this.#gameOver.classList.add("no-display");
+    }
+
+    gameOverIsBeingDisplayed() {
+        return !this.#gameOver.classList.contains("no-display");
+    }
+
     addSpaceClickedEventListener(handler) {
         this.#board.addEventListener("click", handler);
     }
@@ -265,6 +344,10 @@ class View {
 
     addCloseInstructionsButtonClickedEventListener(handler) {
         this.#closeInstructionsButton.addEventListener("click", handler);
+    }
+
+    addPlayAgainButtonClickedEventListener(handler) {
+        this.#playAgainButton.addEventListener("click", handler);
     }
 }
 
