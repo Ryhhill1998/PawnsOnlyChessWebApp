@@ -3,6 +3,9 @@ const pieceSelectedHTML = `<div class="space-overlay space-overlay-selected"></d
 const validMoveIndicatorHTML = `<div class="space-overlay space-overlay-possible-move"></div>`;
 const validTakeIndicatorHTML = `<div class="space-overlay space-overlay-possible-take"></div>`;
 
+const blackPieceHTML = `<img class="black-piece" src="pieces/black/pawn.svg" alt="">`;
+const whitePieceHTML = `<img class="white-piece" src="pieces/white/pawn.svg" alt="">`;
+
 class View {
 
     #board;
@@ -253,10 +256,25 @@ class View {
         });
     }
 
+    #resetAllPieces() {
+        for (let i = 0; i < 2; i++) {
+            const row = this.#getElement("#row-" + i);
+            const spaces = this.#getAllElements(".space", row);
+            spaces.forEach(space => space.innerHTML = blackPieceHTML);
+        }
+
+        for (let i = 6; i < 8; i++) {
+            const row = this.#getElement("#row-" + i);
+            const spaces = this.#getAllElements(".space", row);
+            spaces.forEach(space => space.innerHTML = whitePieceHTML);
+        }
+    }
+
     resetBoard() {
         this.#removeAllPieces();
         this.#removeAllPiecesTaken();
         this.removeAllOverlays();
+        this.#resetAllPieces();
     }
 
     getPiecesArray(colour) {
