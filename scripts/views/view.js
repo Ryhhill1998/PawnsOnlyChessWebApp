@@ -22,13 +22,6 @@ class View {
     #playAgainButton;
 
     constructor() {
-        // board
-        this.#board = this.#getElement("#board");
-
-        // player info sections
-        this.#blackPlayerInfo = this.#getElement("#black-player-info");
-        this.#whitePlayerInfo = this.#getElement("#white-player-info");
-
         // buttons in header
         this.#undoButton = this.#getElement("#undo-button");
         this.#infoButton = this.#getElement("#info-button");
@@ -38,13 +31,24 @@ class View {
         this.#closeInstructionsButton = this.#getElement("#close-instructions-button");
         this.#overlay = this.#getElement("#overlay");
 
-        // white and black pieces arrays
-        this.#whitePieces = [...this.#getAllElements(".white-piece", this.#board)];
-        this.#blackPieces = [...this.#getAllElements(".black-piece", this.#board)];
-
         // game over popup
         this.#gameOver = this.#getElement("#game-over");
         this.#playAgainButton = this.#getElement("#play-again", this.#gameOver);
+
+        this.#init();
+    }
+
+    #init() {
+        // board
+        this.#board = this.#getElement("#board");
+
+        // player info sections
+        this.#blackPlayerInfo = this.#getElement("#black-player-info");
+        this.#whitePlayerInfo = this.#getElement("#white-player-info");
+
+        // white and black pieces arrays
+        this.#whitePieces = [...this.#getAllElements(".white-piece", this.#board)];
+        this.#blackPieces = [...this.#getAllElements(".black-piece", this.#board)];
     }
 
     #getElement(selector, parentElement = document) {
@@ -270,11 +274,18 @@ class View {
         }
     }
 
-    resetBoard() {
+    #removeWinnerIndicator() {
+        const iconContainers = this.#getAllElements(".icon-container");
+        iconContainers.forEach(container => container.classList.remove("winner"));
+    }
+
+    resetGame() {
         this.#removeAllPieces();
         this.#removeAllPiecesTaken();
         this.removeAllOverlays();
         this.#resetAllPieces();
+        this.#removeWinnerIndicator();
+        this.#init();
     }
 
     getPiecesArray(colour) {

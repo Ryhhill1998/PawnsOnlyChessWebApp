@@ -293,7 +293,9 @@ export default class Controller {
     }
 
     resetGame() {
-        this.view.resetBoard();
+        this.#hideGameOverAndOverlay();
+        this.view.resetGame();
+        this.model.resetGame();
     }
 
     init() {
