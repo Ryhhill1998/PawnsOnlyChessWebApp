@@ -141,7 +141,6 @@ export default class Controller {
 
     checkGameOver(moveSpace) {
         const turn = this.model.turn;
-        console.log("turn:", turn)
 
         // get y value for piece that just moved
         const y = this.view.getCoordinatesFromSpace(moveSpace)[1];
