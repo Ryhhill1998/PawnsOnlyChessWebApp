@@ -144,9 +144,10 @@ export default class Controller {
 
         if (gameOver) {
             this.view.displayWinner(turn);
+
             let feedback;
 
-            if (turn === "white") {
+            if (this.type === "2P" || turn === "white") {
                 feedback = "You win!";
             } else {
                 feedback = "You lose!";

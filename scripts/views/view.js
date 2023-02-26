@@ -161,10 +161,12 @@ class View {
         let winnerIcon;
 
         if (winner === "white") {
-            this.#getElement(".white-icon", this.#gameOver).classList.add("winner");
+            winnerIcon = this.#getElement(".white-icon", this.#gameOver);
         } else {
-            this.#getElement(".black-icon", this.#gameOver).classList.add("winner");
+            winnerIcon = this.#getElement(".black-icon", this.#gameOver);
         }
+
+        winnerIcon.classList.add("winner");
     }
 
     displayActivePlayer(player) {
