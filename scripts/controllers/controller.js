@@ -292,11 +292,16 @@ export default class Controller {
         this.view.hideOverlay();
     }
 
+    resetGame() {
+        this.view.resetBoard();
+    }
+
     init() {
         this.view.addSpaceClickedEventListener(this.spaceClicked.bind(this));
         this.view.addUndoClickedEventListener(this.undoClicked.bind(this));
         this.view.addInfoClickedEventListener(this.infoClicked.bind(this));
         this.view.addOverlayClickedEventListener(this.overlayClicked.bind(this));
         this.view.addCloseInstructionsButtonClickedEventListener(this.closeInstructionsButtonClicked.bind(this));
+        this.view.addPlayAgainButtonClickedEventListener(this.resetGame.bind(this));
     }
 }

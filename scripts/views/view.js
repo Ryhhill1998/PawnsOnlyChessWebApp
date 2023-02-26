@@ -15,7 +15,8 @@ class View {
     #overlay;
     #whitePieces;
     #blackPieces;
-    #gameOver
+    #gameOver;
+    #playAgainButton;
 
     constructor() {
         // board
@@ -40,6 +41,7 @@ class View {
 
         // game over popup
         this.#gameOver = this.#getElement("#game-over");
+        this.#playAgainButton = this.#getElement("#play-again", this.#gameOver);
     }
 
     #getElement(selector, parentElement = document) {
@@ -236,6 +238,27 @@ class View {
         piece.setAttribute("src", pieceImageSrc);
     }
 
+    #removeAllPieces() {
+        const spaces = this.#getAllElements(".space");
+
+        spaces.forEach(space => space.innerHTML = "");
+    }
+
+    #removeAllPiecesTaken() {
+        const piecesTakenContainers = this.#getAllElements(".pieces-taken");
+
+        piecesTakenContainers.forEach(container => {
+            this.#getElement(".pieces", container).innerHTML = "";
+            this.#getElement(".additional-pieces", container).innerHTML = "";
+        });
+    }
+
+    resetBoard() {
+        this.#removeAllPieces();
+        this.#removeAllPiecesTaken();
+        this.removeAllOverlays();
+    }
+
     getPiecesArray(colour) {
         return colour === "white" ? this.#whitePieces : this.#blackPieces;
     }
@@ -295,6 +318,10 @@ class View {
 
     addCloseInstructionsButtonClickedEventListener(handler) {
         this.#closeInstructionsButton.addEventListener("click", handler);
+    }
+
+    addPlayAgainButtonClickedEventListener(handler) {
+        this.#playAgainButton.addEventListener("click", handler);
     }
 }
 
